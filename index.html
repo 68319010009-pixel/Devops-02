@@ -3,98 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devops-02: Quick Calculator</title>
+    <title>Devops-02: Calculator</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            font-family: sans-serif;
+            background: #a29bfe;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
         }
-        .calculator-box {
-            background-color: white;
+        .box {
+            background: white;
             padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 10px;
             text-align: center;
-            width: 320px;
-        }
-        h2 {
-            color: #2d3436;
-            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         input {
             width: 80%;
-            padding: 10px;
+            padding: 10px
             margin: 10px 0;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 16px;
             text-align: center;
         }
         button {
-            width: 88%;
-            padding: 12px;
-            background-color: #6c5ce7;
+            width: 85%;
+            padding: 10px;
+            background: #6c5ce7;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
             cursor: pointer;
-            transition: 0.2s;
         }
-        button:hover {
-            background-color: #5b4cc4;
-        }
-        .result-box {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f1f2f6;
-            border-radius: 8px;
-            font-size: 18px;
+        #result {
+            margin-top: 15px;
             font-weight: bold;
-            color: #2d3436;
         }
     </style>
 </head>
 <body>
-
-    <div class="calculator-box">
-        <h2>🚀 Devops-02 Calc</h2>
-        <p>โปรเจกต์เครื่องคำนวณเลขอย่างง่าย</p>
-        
-        <input type="number" id="num1" placeholder="ใส่ตัวเลขตัวที่ 1">
-        <input type="number" id="num2" placeholder="ใส่ตัวเลขตัวที่ 2">
-        
-        <button onclick="calculateSum()">กดเพื่อบวกเลขข้างบน</button>
-
-        <div class="result-box" id="result">
-            ผลลัพธ์จะแสดงตรงนี้จ้า
-        </div>
+    <div class="box">
+        <h2>🚀 เครื่องคิดเลข Devops-02</h2>
+        <input type="number" id="n1" placeholder="ตัวเลขที่ 1">
+        <input type="number" id="n2" placeholder="ตัวเลขที่ 2">
+        <button onclick="cal()">คำนวณผลรวม</button>
+        <div id="result">ผลลัพธ์จะแสดงตรงนี้</div>
     </div>
-
     <script>
-        function calculateSum() {
-            // ดึงค่าจากช่องพิมพ์
-            var n1 = parseFloat(document.getElementById('num1').value);
-            var n2 = parseFloat(document.getElementById('num2').value);
-            
-            // ตรวจสอบว่าใส่ตัวเลขครบไหม
-            if (isNaN(n1) || !n2 && n2 !== 0) {
-                document.getElementById('result').innerText = "❌ กรุณาใส่ตัวเลขให้ครบนะ";
+        function cal() {
+            var num1 = parseFloat(document.getElementById('n1').value);
+            var num2 = parseFloat(document.getElementById('n2').value);
+            if (isNaN(num1) || isNaN(num2)) {
+                document.getElementById('result').innerText = "❌ กรุณาใส่ตัวเลขให้ครบ";
                 return;
             }
-            
-            // คำนวณผลรวม
-            var sum = n1 + n2;
-            
-            // แสดงผลลัพธ์บนหน้าจอ
-            document.getElementById('result').innerText = "🎉 ผลรวมคือ: " + sum;
+            document.getElementById('result').innerText = "🎉 ผลรวมคือ: " + (num1 + num2);
         }
     </script>
-
 </body>
 </html>
