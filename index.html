@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ben 10: Omnitrix Simulator</title>
+    <title>Ben 10: Omnitrix Ultimate Battle System</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: radial-gradient(circle, #051a05, #000000);
+            background: radial-gradient(circle, #051f05, #000000);
             color: #00ff00;
             display: flex;
             flex-direction: column;
@@ -15,179 +15,398 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            overflow: hidden;
+            padding: 15px;
+            box-sizing: border-box;
         }
         h1 {
-            font-size: 24px;
+            font-size: 22px;
             text-shadow: 0 0 10px #00ff00;
-            margin-bottom: 5px;
-            letter-spacing: 2px;
+            margin: 0 0 5px 0;
+            letter-spacing: 1px;
         }
         .subtitle {
             color: #666;
-            margin-bottom: 30px;
-            font-size: 13px;
+            margin-bottom: 12px;
+            font-size: 12px;
         }
+
+        /* โซนสนามรบ บอส VS ตัวเรา */
+        .battle-arena {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 480px;
+            margin-bottom: 15px;
+        }
+        .unit-box {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            border-radius: 12px;
+            box-sizing: border-box;
+        }
+        .boss-side {
+            border: 2px solid #ff3333;
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.1);
+        }
+        .player-side {
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+        }
+        .unit-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        .boss-side .unit-name { color: #ff3333; text-shadow: 0 0 8px rgba(255,51,51,0.4); }
+        .player-side .unit-name { color: #00ff00; text-shadow: 0 0 8px rgba(0,255,0,0.4); }
+        
+        /* แถบเลือด HP */
+        .hp-container {
+            width: 100%;
+            background-color: #222;
+            border-radius: 8px;
+            height: 16px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        .boss-side .hp-container { border: 1px solid #ff3333; }
+        .player-side .hp-container { border: 1px solid #00ff00; }
+        
+        .hp-bar {
+            width: 100%;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        .boss-side .hp-bar { background: linear-gradient(90deg, #ff3333, #ff7777); }
+        .player-side .hp-bar { background: linear-gradient(90deg, #00aa00, #00ff00); }
+
+        /* บันทึกการต่อสู้ */
+        .log-box {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 13px;
+            color: #fff;
+            text-align: center;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-style: italic;
+        }
+        
+        /* โซนเลือกเอเลี่ยน */
+        .alien-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            width: 100%;
+            max-width: 480px;
+            background: rgba(0, 255, 0, 0.02);
+            border: 1px solid #004400;
+            padding: 6px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+        .alien-item {
+            background: #111;
+            border: 1px solid #333;
+            color: #888;
+            padding: 6px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+        }
+        .alien-item.selected {
+            background: #004d00;
+            border-color: #00ff00;
+            color: #fff;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+        }
+
         /* ตัวนาฬิกา Omnitrix */
         .omnitrix-dial {
-            width: 220px;
-            height: 220px;
-            background: #111;
-            border: 8px solid #333;
+            width: 120px;
+            height: 120px;
+            background: #151515;
+            border: 5px solid #333;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.2);
-            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
             cursor: pointer;
         }
-        .omnitrix-dial:hover {
-            border-color: #00ff00;
-            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
-        }
-        /* หน้าปัดแกนหมุนด้านใน */
         .core {
-            width: 160px;
-            height: 160px;
-            background: radial-gradient(circle, #004d00, #001a00);
+            width: 85px;
+            height: 85px;
+            background: radial-gradient(circle, #003300, #001100);
             border-radius: 50%;
-            border: 4px solid #00ff00;
+            border: 3px solid #00ff00;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 0 20px #00ff00;
-            font-size: 60px;
-            transition: all 0.2s;
+            box-shadow: 0 0 10px #00ff00;
+            font-size: 35px;
+            transition: all 0.3s;
         }
-        /* เอฟเฟกต์ตอนกดใช้งาน (กะพริบ/โหลด) */
+        
         .scanning {
-            animation: flash 0.2s infinite alternate;
+            animation: flash 0.12s infinite alternate;
             border-color: #ffaa00 !important;
-            box-shadow: 0 0 30px #ffaa00 !important;
+            box-shadow: 0 0 15px #ffaa00 !important;
         }
-        @keyframes flash {
-            from { background: #001a00; }
-            to { background: #ffaa00; }
+        .timeout {
+            animation: flash-red 0.3s infinite alternate;
+            border-color: #ff0000 !important;
+            box-shadow: 0 0 20px #ff0000 !important;
         }
-        /* ส่วนแสดงผลเอเลี่ยน */
-        .result-panel {
-            margin-top: 30px;
-            text-align: center;
-            min-height: 100px;
+        @keyframes flash { from { background: #001100; } to { background: #ffaa00; } }
+        @keyframes flash-red { from { background: #000; } to { background: #550000; } }
+
+        /* ปุ่มกดควบคุม */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
-        .alien-name {
-            font-size: 28px;
-            font-weight: bold;
-            color: #ffffff;
-            text-shadow: 0 0 15px #00ff00;
-            margin: 5px 0;
-            transform: scale(0);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .alien-name.show {
-            transform: scale(1);
-        }
-        .catchphrase {
-            color: #88ff88;
-            font-style: italic;
-            font-size: 16px;
-            margin-top: 5px;
-        }
-        /* ปุ่มกด */
         .omni-btn {
-            margin-top: 10px;
-            padding: 12px 30px;
+            padding: 10px 20px;
             background-color: #00ff00;
             color: black;
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
-            transition: all 0.2s;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
         }
-        .omni-btn:hover {
-            background-color: #fff;
-            box-shadow: 0 0 25px #fff;
-            transform: scale(1.05);
-        }
+        .omni-btn:hover { background-color: #fff; transform: scale(1.02); }
+        .btn-attack { background-color: #ff3333; color: white; display: none; }
+        .btn-attack:hover { background-color: #ff7777; color: black; }
+        .btn-secondary { background-color: #222; color: #00ff00; border: 1px solid #00ff00; }
     </style>
 </head>
 <body>
 
-    <h1>🟢 OMNITRIX DNA SIMULATOR</h1>
-    <div class="subtitle">Devops-02: ระบบสุ่มแปลงร่างเอเลี่ยนอัจฉริยะ</div>
+    <h1>⚔️ OMNITRIX TURN-BASED SYSTEM</h1>
+    <div class="subtitle">Devops-02: ศึกประจัญบานวัดพลัง HP</div>
 
-    <div class="omnitrix-dial" id="dial" onclick="transformAlien()">
+    <div class="battle-arena">
+        <!-- ฝั่งบอสตัวร้าย -->
+        <div class="unit-box boss-side">
+            <div class="unit-name" id="boss-name-display">🐙 Vilgax</div>
+            <div style="font-size: 12px;">HP: <span id="boss-hp-text">100</span> / <span id="boss-max-hp-text">100</span></div>
+            <div class="hp-container"><div class="hp-bar" id="bossHpBar"></div></div>
+        </div>
+
+        <!-- ฝั่งตัวเรา (เบ็น) -->
+        <div class="unit-box player-side">
+            <div class="unit-name" id="player-name-display">🟢 Ben Tennyson (ร่างมนุษย์)</div>
+            <div style="font-size: 12px;">HP: <span id="player-hp-text">100</span> / 100</div>
+            <div class="hp-container"><div class="hp-bar" id="playerHpBar"></div></div>
+        </div>
+
+        <!-- กระดานบันทึกการสู้ -->
+        <div class="log-box" id="battle-log">เลือกเอเลี่ยนแล้วแปลงร่างลงสนามรบเลย! บอสกำลังรอขย้ำคุณอยู่</div>
+    </div>
+
+    <!-- ปุ่มเลือกเอเลี่ยน -->
+    <div class="alien-grid" id="alienGrid"></div>
+
+    <!-- นาฬิกา Omnitrix -->
+    <div class="omnitrix-dial" onclick="activateTransformation()">
         <div class="core" id="omni-core">🟢</div>
     </div>
 
-    <div class="result-panel">
-        <div id="status-text">นาฬิกาพร้อมใช้งาน... ตบหน้าปัดเพื่อแปลงร่าง!</div>
-        <div class="alien-name" id="alien-display"></div>
-        <div class="catchphrase" id="catchphrase-display"></div>
+    <!-- ปุ่มกด -->
+    <div class="btn-group">
+        <button class="omni-btn" id="btn-transform" onclick="activateTransformation()">ตบหน้าปัดเพื่อแปลงร่าง! ⚡</button>
+        <button class="omni-btn btn-attack" id="btn-attack" onclick="playerTurn()">💥 สั่งโจมตีบอส!</button>
+        <button class="omni-btn btn-secondary" id="btn-reset" onclick="resetGame()" style="display:none;">REBOOT SYSTEM</button>
     </div>
 
-    <button class="omni-btn" onclick="transformAlien()">ตบหน้าปัดนาฬิกา!</button>
-
     <script>
-        // ข้อมูลเอเลี่ยนและคำพูดเปิดตัวสุดเท่
         const alienList = [
-            { name: "🔥 Heatblast (ฮีตบลาสต์)", icon: "🔥", text: "“ได้เวลาลุยไฟกันแล้ว! ร้อนแรงสุดๆ!”" },
-            { name: "💪 Four Arms (สี่แขน)", icon: "💪", text: "“พลังหมัดสี่แขนถล่มปฐพี! เข้ามาพร้อมกันเลย!”" },
-            { name: "⚡ XLR8 (เอ็กซ์แอลอาร์แปด)", icon: "⚡", text: "“ความเร็วแสงยังเรียกพี่! วิ่งเร็วปรี๊ดจนมองไม่ทัน!”" },
-            { name: "💎 Diamondhead (ไดมอนด์เฮด)", icon: "💎", text: "“เพชรฆาตคริสตัลสุดแกร่ง ยิงผลึกเพชรใส่ไม่ยั้ง!”" },
-            { name: "👻 Ghostfreak (โกสต์ฟรีค)", icon: "👻", text: "“ทะลุกำแพง ล่องหนหายตัว... น่ากลัวใช่ไหมล่ะ!”" },
-            { name: "🧠 Grey Matter (เกรย์ แมตเตอร์)", icon: "🧠", text: "“ถึงตัวจะเล็กเท่ามด แต่ไอคิวฉลาดที่สุดในจักรวาล!”" },
-            { name: "🤢 Stinkfly (สติงก์ฟลาย)", icon: "🤢", text: "“บินร่อนบนฟ้า พ่นเมือกเหนียวหนึบใส่ศัตรู!”" },
-            { name: "🦾 Upgrade (อัปเกรด)", icon: "🦾", text: "“ผสานเข้ากับเทคโนโลยี! ควบคุมเครื่องจักรได้ทุกชนิด!”" },
-            { name: "🐺 Wildmutt (ไวลด์มัตต์)", icon: "🐺", text: "“โฮ่ง! ไม่มีตาแต่ดมกลิ่นและรับคลื่นเสียงได้เฉียบคม!”" },
-            { name: "🦈 Ripjaws (ริปจอนส์)", icon: "🦈", text: "“ราชาแห่งสายน้ำ! เขี้ยวคมกริบพร้อมขย้ำใต้มหาสมุทร!”" }
+            { name: "🔥 Heatblast", icon: "🔥", dmg: 22, move: "พ่นลาวาร้อนแรงเผาไหม้!" },
+            { name: "💪 Four Arms", icon: "💪", dmg: 28, move: "รัวหมัดสี่แขนทุบหน้าบอส!" },
+            { name: "⚡ XLR8", icon: "⚡", dmg: 16, move: "วิ่งด้วยความเร็วแสงแล้วเตะคอมโบ!" },
+            { name: "💎 Diamondhead", icon: "💎", dmg: 20, move: "ยิงหอกคริสตัลเพชรแทงทะลวง!" },
+            { name: "🦾 Upgrade", icon: "🦾", dmg: 24, move: "ยิงปืนแสงเลเซอร์พลาสมาอัดใส่!" }
         ];
 
-        let isScanning = false;
+        const bossList = [
+            { name: "🐙 Vilgax (วิลแกกซ์)", maxHp: 100, atk: 15, move: "ใช้ดาบเลเซอร์ฟันสวนกลับ!" },
+            { name: "⚡ Kevin 11 (เควิน 11)", maxHp: 120, atk: 18, move: "ใช้หมัดเอเลี่ยนผสมชกกลับอย่างรุนแรง!" },
+            { name: "🧠 Dr. Animo (ดร.แอนิโม)", maxHp: 80, atk: 12, move: "สั่งให้สัตว์กลายพันธุ์พุ่งเข้ามาขย้ำคุณ!" }
+        ];
 
-        function transformAlien() {
-            if (isScanning) return; // ถ้ากำลังสุ่มอยู่ ห้ามกดซ้ำ
+        let currentBossIndex = 0;
+        let bossHp = bossList[0].maxHp;
+        let playerHp = 100;
+        let selectedAlienIndex = null;
+        let isScanning = false;
+        let hasTransformed = false;
+        let isGameOver = false;
+
+        function initGame() {
+            const grid = document.getElementById('alienGrid');
+            grid.innerHTML = '';
+            alienList.forEach((alien, index) => {
+                const item = document.createElement('div');
+                item.classList.add('alien-item');
+                item.id = `alien-${index}`;
+                item.innerText = `${alien.icon} ${alien.name.split(' ')[1] || alien.name}`;
+                item.onclick = () => selectAlien(index);
+                grid.appendChild(item);
+            });
+            updateUI();
+        }
+
+        function selectAlien(index) {
+            if (isScanning || isGameOver) return;
+            if (selectedAlienIndex !== null) document.getElementById(`alien-${selectedAlienIndex}`).classList.remove('selected');
             
+            selectedAlienIndex = index;
+            document.getElementById(`alien-${index}`).classList.add('selected');
+            document.getElementById('omni-core').innerText = alienList[index].icon;
+            
+            hasTransformed = false;
+            document.getElementById('btn-attack').style.display = 'none';
+            document.getElementById('btn-transform').style.display = 'inline-block';
+            document.getElementById('battle-log').innerText = `ระบบล็อกเป้าหมาย ${alienList[index].name} แล้ว กดตบหน้าปัดเพื่อแปลงร่าง!`;
+        }
+
+        function activateTransformation() {
+            if (isScanning || isGameOver) return;
+            if (selectedAlienIndex === null) { alert("❌ กรุณาเลือกเอเลี่ยนก่อนครับ!"); return; }
+
             isScanning = true;
             const core = document.getElementById('omni-core');
-            const alienDisplay = document.getElementById('alien-display');
-            const catchphraseDisplay = document.getElementById('catchphrase-display');
-            const statusText = document.getElementById('status-text');
-
-            // เริ่มการสแกน DNA (เอฟเฟกต์ไฟกะพริบสีส้ม)
             core.classList.add('scanning');
-            core.innerText = "⚡";
-            statusText.innerText = "กำลังสแกนหา DNA เอเลี่ยนในอวกาศ...";
-            alienDisplay.classList.remove('show');
-            alienDisplay.innerText = "";
-            catchphraseDisplay.innerText = "";
+            document.getElementById('battle-log').innerText = "กำลังอัปเดตโมเลกุลรหัส DNA...";
 
-            // จำลองเวลาสุ่ม 1.5 วินาที
             setTimeout(() => {
-                // หยุดเอฟเฟกต์กะพริบ
                 core.classList.remove('scanning');
+                const alien = alienList[selectedAlienIndex];
+                core.innerText = alien.icon;
                 
-                // สุ่มเลือกเอเลี่ยนจากอาเรย์
-                const randomIndex = Math.floor(Math.random() * alienList.length);
-                const selectedAlien = alienList[randomIndex];
-
-                // แสดงผลลัพธ์
-                core.innerText = selectedAlien.icon;
-                statusText.innerText = "แปลงร่างเสร็จสมบูรณ์! คุณได้เป็น:";
-                
-                alienDisplay.innerText = selectedAlien.name;
-                alienDisplay.classList.add('show');
-                
-                catchphraseDisplay.innerText = selectedAlien.text;
+                document.getElementById('player-name-display').innerText = `🟢 Ben (${alien.name})`;
+                document.getElementById('battle-log').innerText = `⚡ แปลงร่างเป็น ${alien.name} สำเร็จ! ถึงตาคุณโจมตีแล้ว!`;
                 
                 isScanning = false;
-            }, 1500);
+                hasTransformed = true;
+                document.getElementById('btn-attack').style.display = 'inline-block';
+                document.getElementById('btn-transform').style.display = 'none';
+            }, 1000);
         }
+
+        // ฝั่งผู้เล่นโจมตี
+        function playerTurn() {
+            if (!hasTransformed || isGameOver || isScanning) return;
+            
+            const alien = alienList[selectedAlienIndex];
+            bossHp -= alien.dmg;
+            if (bossHp < 0) bossHp = 0;
+            updateUI();
+
+            document.getElementById('battle-log').innerText = `⚔️ ${alien.name} ใช้ [${alien.move}] สร้างความเสียหาย ${alien.dmg} หน่วย!`;
+
+            if (bossHp <= 0) {
+                document.getElementById('battle-log').innerText = `🎉 ยินดีด้วย! คุณสามารถปราบ ${bossList[currentBossIndex].name} ได้สำเร็จ!`;
+                disableActions();
+                setTimeout(nextBoss, 1500);
+            } else {
+                // ถ้าบอสยังไม่ตาย บอสจะโจมตีสวนกลับหลังจากนั้น 0.8 วินาที
+                isScanning = true; // ล็อกปุ่มชั่วคราวระหว่างรอบอสสวน
+                setTimeout(bossTurn, 800);
+            }
+        }
+
+        // ฝั่งบอสโจมตีสวนกลับ
+        function bossTurn() {
+            if (isGameOver || bossHp <= 0) return;
+
+            const boss = bossList[currentBossIndex];
+            playerHp -= boss.atk;
+            if (playerHp < 0) playerHp = 0;
+            updateUI();
+
+            document.getElementById('battle-log').innerText += ` \n🚨 บอสสวนกลับทันที! ${boss.name} ใช้ [${boss.move}] โดนคุณเต็มๆ ${boss.atk} HP!`;
+            isScanning = false;
+
+            if (playerHp <= 0) {
+                document.getElementById('battle-log').innerText = "💀 พลังชีวิตของคุณหมดลงแล้ว! ระบบ Omnitrix ล้มเหลว (Time Out)";
+                document.getElementById('omni-core').innerText = "❌";
+                document.getElementById('omni-core').classList.add('timeout');
+                endGame(false);
+            }
+        }
+
+        function updateUI() {
+            const boss = bossList[currentBossIndex];
+            document.getElementById('boss-name-display').innerText = boss.name;
+            document.getElementById('boss-hp-text').innerText = bossHp;
+            document.getElementById('boss-max-hp-text').innerText = boss.maxHp;
+            document.getElementById('bossHpBar').style.width = `${(bossHp / boss.maxHp) * 100}%`;
+
+            document.getElementById('player-hp-text').innerText = playerHp;
+            document.getElementById('playerHpBar').style.width = `${playerHp}%`;
+        }
+
+        function nextBoss() {
+            currentBossIndex = (currentBossIndex + 1) % bossList.length;
+            bossHp = bossList[currentBossIndex].maxHp;
+            playerHp = 100; // เติมเลือดให้เราเมื่อข้ามด่าน
+            
+            document.getElementById('battle-log').innerText = `🚨 คำเตือน! บอสตัวใหม่ [${bossList[currentBossIndex].name}] โผล่เข้ามาแล้ว!`;
+            document.getElementById('player-name-display').innerText = `🟢 Ben Tennyson (ร่างมนุษย์)`;
+            document.getElementById('omni-core').innerText = "🟢";
+            
+            hasTransformed = false;
+            isScanning = false;
+            if (selectedAlienIndex !== null) document.getElementById(`alien-${selectedAlienIndex}`).classList.remove('selected');
+            selectedAlienIndex = null;
+
+            document.getElementById('btn-transform').style.display = 'inline-block';
+            document.getElementById('btn-attack').style.display = 'none';
+            updateUI();
+        }
+
+        function disableActions() {
+            document.getElementById('btn-attack').style.display = 'none';
+            document.getElementById('btn-transform').style.display = 'none';
+        }
+
+        function endGame(victory) {
+            isGameOver = true;
+            disableActions();
+            document.getElementById('btn-reset').style.display = 'inline-block';
+        }
+
+        function resetGame() {
+            currentBossIndex = 0;
+            bossHp = bossList[0].maxHp;
+            playerHp = 100;
+            selectedAlienIndex = null;
+            isScanning = false;
+            hasTransformed = false;
+            isGameOver = false;
+            
+            document.getElementById('omni-core').classList.remove('timeout');
+            document.getElementById('omni-core').innerText = "🟢";
+            document.getElementById('player-name-display').innerText = `🟢 Ben Tennyson (ร่างมนุษย์)`;
+            document.getElementById('btn-reset').style.display = 'none';
+            document.getElementById('btn-transform').style.display = 'inline-block';
+            
+            initGame();
+        }
+
+        initGame();
     </script>
 
 </body>
