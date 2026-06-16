@@ -3,62 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devops-02: Calculator</title>
+    <title>Ben 10: Omnitrix Simulator</title>
     <style>
         body {
-            font-family: sans-serif;
-            background: #a29bfe;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #051a05, #000000);
+            color: #00ff00;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: center;
+            min-height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
-        .box {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        h1 {
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
         }
-        input {
-            width: 80%;
-            padding: 10px
-            margin: 10px 0;
-            text-align: center;
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 13px;
         }
-        button {
-            width: 85%;
-            padding: 10px;
-            background: #6c5ce7;
-            color: white;
-            border: none;
+        /* ตัวนาฬิกา Omnitrix */
+        .omnitrix-dial {
+            width: 220px;
+            height: 220px;
+            background: #111;
+            border: 8px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 255, 0, 0.2);
+            transition: all 0.3s ease;
             cursor: pointer;
         }
-        #result {
-            margin-top: 15px;
+        .omnitrix-dial:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.4);
+        }
+        /* หน้าปัดแกนหมุนด้านใน */
+        .core {
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, #004d00, #001a00);
+            border-radius: 50%;
+            border: 4px solid #00ff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px #00ff00;
+            font-size: 60px;
+            transition: all 0.2s;
+        }
+        /* เอฟเฟกต์ตอนกดใช้งาน (กะพริบ/โหลด) */
+        .scanning {
+            animation: flash 0.2s infinite alternate;
+            border-color: #ffaa00 !important;
+            box-shadow: 0 0 30px #ffaa00 !important;
+        }
+        @keyframes flash {
+            from { background: #001a00; }
+            to { background: #ffaa00; }
+        }
+        /* ส่วนแสดงผลเอเลี่ยน */
+        .result-panel {
+            margin-top: 30px;
+            text-align: center;
+            min-height: 100px;
+        }
+        .alien-name {
+            font-size: 28px;
             font-weight: bold;
+            color: #ffffff;
+            text-shadow: 0 0 15px #00ff00;
+            margin: 5px 0;
+            transform: scale(0);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .alien-name.show {
+            transform: scale(1);
+        }
+        .catchphrase {
+            color: #88ff88;
+            font-style: italic;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        /* ปุ่มกด */
+        .omni-btn {
+            margin-top: 10px;
+            padding: 12px 30px;
+            background-color: #00ff00;
+            color: black;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+            transition: all 0.2s;
+        }
+        .omni-btn:hover {
+            background-color: #fff;
+            box-shadow: 0 0 25px #fff;
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>🚀 เครื่องคิดเลข Devops-02</h2>
-        <input type="number" id="n1" placeholder="ตัวเลขที่ 1">
-        <input type="number" id="n2" placeholder="ตัวเลขที่ 2">
-        <button onclick="cal()">คำนวณผลรวม</button>
-        <div id="result">ผลลัพธ์จะแสดงตรงนี้</div>
+
+    <h1>🟢 OMNITRIX DNA SIMULATOR</h1>
+    <div class="subtitle">Devops-02: ระบบสุ่มแปลงร่างเอเลี่ยนอัจฉริยะ</div>
+
+    <div class="omnitrix-dial" id="dial" onclick="transformAlien()">
+        <div class="core" id="omni-core">🟢</div>
     </div>
+
+    <div class="result-panel">
+        <div id="status-text">นาฬิกาพร้อมใช้งาน... ตบหน้าปัดเพื่อแปลงร่าง!</div>
+        <div class="alien-name" id="alien-display"></div>
+        <div class="catchphrase" id="catchphrase-display"></div>
+    </div>
+
+    <button class="omni-btn" onclick="transformAlien()">ตบหน้าปัดนาฬิกา!</button>
+
     <script>
-        function cal() {
-            var num1 = parseFloat(document.getElementById('n1').value);
-            var num2 = parseFloat(document.getElementById('n2').value);
-            if (isNaN(num1) || isNaN(num2)) {
-                document.getElementById('result').innerText = "❌ กรุณาใส่ตัวเลขให้ครบ";
-                return;
-            }
-            document.getElementById('result').innerText = "🎉 ผลรวมคือ: " + (num1 + num2);
+        // ข้อมูลเอเลี่ยนและคำพูดเปิดตัวสุดเท่
+        const alienList = [
+            { name: "🔥 Heatblast (ฮีตบลาสต์)", icon: "🔥", text: "“ได้เวลาลุยไฟกันแล้ว! ร้อนแรงสุดๆ!”" },
+            { name: "💪 Four Arms (สี่แขน)", icon: "💪", text: "“พลังหมัดสี่แขนถล่มปฐพี! เข้ามาพร้อมกันเลย!”" },
+            { name: "⚡ XLR8 (เอ็กซ์แอลอาร์แปด)", icon: "⚡", text: "“ความเร็วแสงยังเรียกพี่! วิ่งเร็วปรี๊ดจนมองไม่ทัน!”" },
+            { name: "💎 Diamondhead (ไดมอนด์เฮด)", icon: "💎", text: "“เพชรฆาตคริสตัลสุดแกร่ง ยิงผลึกเพชรใส่ไม่ยั้ง!”" },
+            { name: "👻 Ghostfreak (โกสต์ฟรีค)", icon: "👻", text: "“ทะลุกำแพง ล่องหนหายตัว... น่ากลัวใช่ไหมล่ะ!”" },
+            { name: "🧠 Grey Matter (เกรย์ แมตเตอร์)", icon: "🧠", text: "“ถึงตัวจะเล็กเท่ามด แต่ไอคิวฉลาดที่สุดในจักรวาล!”" },
+            { name: "🤢 Stinkfly (สติงก์ฟลาย)", icon: "🤢", text: "“บินร่อนบนฟ้า พ่นเมือกเหนียวหนึบใส่ศัตรู!”" },
+            { name: "🦾 Upgrade (อัปเกรด)", icon: "🦾", text: "“ผสานเข้ากับเทคโนโลยี! ควบคุมเครื่องจักรได้ทุกชนิด!”" },
+            { name: "🐺 Wildmutt (ไวลด์มัตต์)", icon: "🐺", text: "“โฮ่ง! ไม่มีตาแต่ดมกลิ่นและรับคลื่นเสียงได้เฉียบคม!”" },
+            { name: "🦈 Ripjaws (ริปจอนส์)", icon: "🦈", text: "“ราชาแห่งสายน้ำ! เขี้ยวคมกริบพร้อมขย้ำใต้มหาสมุทร!”" }
+        ];
+
+        let isScanning = false;
+
+        function transformAlien() {
+            if (isScanning) return; // ถ้ากำลังสุ่มอยู่ ห้ามกดซ้ำ
+            
+            isScanning = true;
+            const core = document.getElementById('omni-core');
+            const alienDisplay = document.getElementById('alien-display');
+            const catchphraseDisplay = document.getElementById('catchphrase-display');
+            const statusText = document.getElementById('status-text');
+
+            // เริ่มการสแกน DNA (เอฟเฟกต์ไฟกะพริบสีส้ม)
+            core.classList.add('scanning');
+            core.innerText = "⚡";
+            statusText.innerText = "กำลังสแกนหา DNA เอเลี่ยนในอวกาศ...";
+            alienDisplay.classList.remove('show');
+            alienDisplay.innerText = "";
+            catchphraseDisplay.innerText = "";
+
+            // จำลองเวลาสุ่ม 1.5 วินาที
+            setTimeout(() => {
+                // หยุดเอฟเฟกต์กะพริบ
+                core.classList.remove('scanning');
+                
+                // สุ่มเลือกเอเลี่ยนจากอาเรย์
+                const randomIndex = Math.floor(Math.random() * alienList.length);
+                const selectedAlien = alienList[randomIndex];
+
+                // แสดงผลลัพธ์
+                core.innerText = selectedAlien.icon;
+                statusText.innerText = "แปลงร่างเสร็จสมบูรณ์! คุณได้เป็น:";
+                
+                alienDisplay.innerText = selectedAlien.name;
+                alienDisplay.classList.add('show');
+                
+                catchphraseDisplay.innerText = selectedAlien.text;
+                
+                isScanning = false;
+            }, 1500);
         }
     </script>
+
 </body>
 </html>
