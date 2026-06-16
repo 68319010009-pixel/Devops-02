@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ben 10: Omnitrix Story RPG V9</title>
+    <title>Omnitrix x Limbus Company: Sound & Animation Edition</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: radial-gradient(circle, #051f05, #000000);
-            color: #00ff00;
+            font-family: 'Courier New', Courier, monospace, 'Segoe UI', Tahoma;
+            background: linear-gradient(135deg, #050a05 0%, #000000 100%);
+            color: #d4eed4;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -17,265 +17,594 @@
             margin: 0;
             padding: 15px;
             box-sizing: border-box;
+            overflow-x: hidden;
         }
         h1 {
-            font-size: 22px;
-            text-shadow: 0 0 10px #00ff00;
+            font-size: 18px;
+            color: #00ff66;
+            text-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
             margin: 0 0 3px 0;
+            text-align: center;
             letter-spacing: 1px;
         }
         .subtitle {
-            color: #666;
-            margin-bottom: 8px;
+            color: #888;
+            margin-bottom: 12px;
             font-size: 11px;
-        }
-
-        /* หน้าจอบรรยายเนื้อเรื่อง (Story Cutscene) */
-        .story-box {
-            background: rgba(0, 20, 0, 0.85);
-            border: 1px dashed #00ff00;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            color: #ccffcc;
-            max-width: 540px;
-            width: 100%;
-            margin-bottom: 10px;
-            box-sizing: border-box;
             text-align: center;
         }
 
-        /* แผงสถานะนาฬิกา */
-        .omni-status-panel {
-            background: rgba(0, 255, 0, 0.05);
-            border: 1px solid #00ff00;
+        /* กล่องเนื้อเรื่องหม่นหมอง */
+        .story-box {
+            background: rgba(3, 10, 3, 0.95);
+            border-left: 4px solid #ffaa00;
+            border-right: 1px dashed #223322;
+            border-top: 1px dashed #223322;
+            border-bottom: 1px dashed #223322;
             padding: 8px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            max-width: 600px;
             width: 100%;
-            max-width: 540px;
+            margin-bottom: 10px;
             box-sizing: border-box;
+            line-height: 1.4;
         }
-        .stolen-status {
-            border-color: #ff3333 !important;
-            color: #ff3333 !important;
-            animation: blink 0.5s infinite alternate;
-        }
-        @keyframes blink { from { opacity: 1; } to { opacity: 0.6; } }
 
-        /* โซนสนามรบ */
+        /* ทำนายการ Clash ล่วงหน้า */
+        .clash-preview-panel {
+            width: 100%;
+            max-width: 600px;
+            background: #080c08;
+            border: 1px solid #ff3333;
+            color: #ffaa00;
+            padding: 6px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        /* สนามรบ */
         .battle-arena {
             display: flex;
             flex-direction: column;
             gap: 10px;
             width: 100%;
-            max-width: 540px;
+            max-width: 600px;
             margin-bottom: 10px;
         }
         .unit-box {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 12px;
-            border-radius: 12px;
+            background: #030503;
+            border: 1px solid #222;
+            padding: 10px;
+            border-radius: 4px;
             box-sizing: border-box;
+            position: relative;
+            transition: transform 0.1s ease-in-out;
         }
-        .boss-side { border: 2px solid #ff3333; }
-        .player-side { border: 2px solid #00ff00; }
+        .boss-side { border-top: 3px solid #ff3333; }
+        .player-side { border-top: 3px solid #00ff66; }
         
-        .hp-container, .energy-container {
-            width: 100%;
-            background-color: #222;
-            border-radius: 6px;
-            height: 14px;
-            overflow: hidden;
-            margin: 4px 0;
-            border: 1px solid #444;
+        /* แอนิเมชันสั่นหน้าจอและการกะพริบ */
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            20%, 60% { transform: translate(-6px, 4px); }
+            40%, 80% { transform: translate(6px, -4px); }
         }
-        .hp-bar { width: 100%; height: 100%; transition: width 0.3s; background: linear-gradient(90deg, #00aa00, #00ff00); }
-        .boss-side .hp-bar { background: linear-gradient(90deg, #ff3333, #ff7777); }
-        .energy-bar { width: 100%; height: 100%; transition: width 0.3s; background: linear-gradient(90deg, #ffaa00, #ff5500); }
+        .shake-effect { animation: shake 0.3s ease-in-out; }
+
+        @keyframes flash-red {
+            0% { background-color: rgba(255, 0, 0, 0.4); }
+            100% { background-color: transparent; }
+        }
+        .flash-red-effect { animation: flash-red 0.4s ease-out; }
+
+        @keyframes flash-green {
+            0% { background-color: rgba(0, 255, 100, 0.3); }
+            100% { background-color: transparent; }
+        }
+        .flash-green-effect { animation: flash-green 0.4s ease-out; }
+
+        .bar-label {
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4px;
+            color: #999;
+        }
+        .gauge-container {
+            width: 100%;
+            background-color: #111;
+            height: 9px;
+            overflow: hidden;
+            border: 1px solid #333;
+            margin-top: 2px;
+        }
+        .gauge-bar { width: 100%; height: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .hp-player { background: #00ff66; box-shadow: 0 0 6px #00ff66; }
+        .hp-boss { background: #ff3333; box-shadow: 0 0 6px #ff3333; }
+        .energy-bar { background: #ffaa00; box-shadow: 0 0 4px #ffaa00; }
+
+        .sp-badge {
+            display: inline-block;
+            padding: 1px 5px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 2px;
+            background: #111;
+        }
+        .sp-positive { color: #00ffaa; border: 1px solid #00ffaa; }
+        .sp-negative { color: #ff5555; border: 1px solid #ff5555; }
+
+        /* แผงแสดง Passive ของแต่ละเอเลี่ยน */
+        .passive-panel {
+            background: #14120a;
+            border: 1px solid #a88400;
+            padding: 5px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            color: #ffd700;
+            margin-top: 6px;
+            transition: all 0.3s;
+        }
 
         .log-box {
-            background: #111;
-            border: 1px solid #333;
-            border-radius: 8px;
+            background: #010301;
+            border: 1px solid #112211;
+            border-radius: 4px;
             padding: 8px;
-            font-size: 12px;
-            color: #fff;
-            text-align: center;
-            min-height: 50px;
-            font-style: italic;
+            font-size: 11px;
+            color: #99cc99;
+            min-height: 110px;
+            white-space: pre-line;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
         }
 
-        /* คลังแสงและเสบียง (Inventory) */
-        .inventory-section {
+        /* แผงคำสั่งสไตล์ Limbus และ ปลุกพลัง Ultimate */
+        .action-panel {
             width: 100%;
-            max-width: 540px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid #444;
+            max-width: 600px;
+            background: #030503;
+            border: 1px solid #113311;
+            border-radius: 4px;
             padding: 8px;
-            border-radius: 10px;
             margin-bottom: 10px;
-            font-size: 12px;
             box-sizing: border-box;
         }
-        .inv-grid {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 5px;
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
         }
-        .inv-btn {
-            background: #222; color: #fff; border: 1px solid #666;
-            padding: 5px 10px; font-size: 11px; border-radius: 5px; cursor: pointer;
+        .control-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
         }
-        .inv-btn:hover:not(:disabled) { border-color: #00ff00; background: #153315; }
-        .inv-btn:disabled { color: #444; border-color: #222; cursor: not-allowed; }
+        .act-btn {
+            background: #090f09;
+            border: 1px solid #223322;
+            color: #c4dec4;
+            padding: 8px 2px;
+            font-size: 11px;
+            font-family: monospace;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .act-btn:hover:not(:disabled) {
+            background: #121e12;
+            border-color: #00ff66;
+            color: #fff;
+            transform: scale(1.02);
+        }
+        .act-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        .act-btn:disabled {
+            background: #111 !important;
+            color: #444 !important;
+            border-color: #1a1a1a !important;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .btn-ultimate-evolve {
+            background: #2b1100;
+            border-color: #ff5500;
+            color: #ffaa00;
+            font-weight: bold;
+        }
+        .btn-ultimate-evolve:hover:not(:disabled) {
+            background: #441a00;
+            border-color: #ff7700;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(255,85,0,0.5);
+        }
+        .btn-ego-awaken {
+            background: #1c0524;
+            border-color: #b800ff;
+            color: #df80ff;
+            font-weight: bold;
+        }
+        .btn-ego-awaken:hover:not(:disabled) {
+            background: #2d0b3a;
+            border-color: #d400ff;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(184,0,255,0.5);
+        }
+        .btn-evade-style { border-color: #3388ff; color: #3388ff; }
+        .btn-evade-style:hover:not(:disabled) { background: #0c1a2e; border-color: #5da2ff; color: #fff; }
 
-        /* แผงเลือกเอเลี่ยน */
+        /* แผงคลังแสงรหัสพันธุกรรม */
         .alien-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 4px;
             width: 100%;
-            max-width: 540px;
-            background: rgba(0, 255, 0, 0.02);
-            border: 1px solid #004400;
+            max-width: 600px;
+            background: rgba(0, 10, 0, 0.4);
+            border: 1px solid #112211;
             padding: 6px;
-            border-radius: 10px;
+            border-radius: 4px;
             margin-bottom: 10px;
             box-sizing: border-box;
         }
         .alien-item {
-            background: #111; border: 1px solid #222; color: #777;
-            padding: 6px 2px; border-radius: 5px; cursor: pointer;
-            text-align: center; font-size: 10px;
+            background: #030403; border: 1px solid #1a1a1a; color: #666;
+            padding: 6px 2px; border-radius: 3px; cursor: pointer;
+            text-align: center; font-size: 11px;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            display: flex; flex-direction: column; align-items: center;
+            transition: all 0.2s;
         }
-        .alien-item.selected { background: #004d00; border-color: #00ff00; color: #fff; font-weight: bold; }
+        .alien-item:hover {
+            border-color: #555;
+            background: #090d09;
+        }
+        .alien-item.selected { 
+            background: #081f08; 
+            border-color: #00ff66; 
+            color: #00ff66; 
+            font-weight: bold; 
+            box-shadow: 0 0 8px rgba(0,255,100,0.3);
+        }
+        .sin-tag { font-size: 8px; margin-top: 2px; padding: 1px 3px; border-radius: 2px; color: #fff; }
 
-        /* นาฬิกา */
+        /* วงแหวนนาฬิกาหมุนได้ */
         .omnitrix-dial {
-            width: 90px; height: 90px; background: #151515; border: 4px solid #333;
+            width: 70px; height: 70px; background: #060a06; border: 2px solid #112211;
             border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+            margin-bottom: 8px;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 10px rgba(0,255,100,0.1);
         }
-        .core {
-            width: 68px; height: 68px; background: radial-gradient(circle, #003300, #001100);
-            border-radius: 50%; border: 3px solid #00ff00; display: flex;
-            align-items: center; justify-content: center; font-size: 26px; transition: all 0.3s;
+        .omnitrix-dial:hover {
+            box-shadow: 0 0 15px rgba(0,255,100,0.4);
         }
-        .scanning { animation: flash 0.12s infinite alternate; border-color: #ffaa00 !important; }
-        .stolen-core { background: #000 !important; border-color: #333 !important; }
-        .timeout-core { animation: flash-orange 0.3s infinite alternate; border-color: #ff5500 !important; }
-        @keyframes flash { from { background: #001100; } to { background: #ffaa00; } }
-        @keyframes flash-orange { from { background: #000; } to { background: #441100; } }
+        @keyframes dial-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .spin-effect { animation: dial-spin 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
-        .omni-btn {
-            padding: 8px 16px; background-color: #00ff00; color: black;
-            border: none; border-radius: 20px; font-size: 12px; font-weight: bold; cursor: pointer;
+        .core {
+            width: 52px; height: 52px; background: #000;
+            border-radius: 50%; border: 2px solid #00ff66; display: flex;
+            align-items: center; justify-content: center; font-size: 20px;
+            box-shadow: inset 0 0 8px rgba(0,255,100,0.5);
+            animation: core-pulse 2s infinite alternate;
         }
-        .btn-attack { background-color: #ff3333; color: white; display: none; }
-        .btn-secondary { background-color: #222; color: #00ff00; border: 1px solid #00ff00; }
+        @keyframes core-pulse {
+            0% { box-shadow: inset 0 0 5px rgba(0,255,100,0.3), 0 0 5px rgba(0,255,100,0.2); }
+            100% { box-shadow: inset 0 0 12px rgba(0,255,100,0.6), 0 0 15px rgba(0,255,100,0.5); }
+        }
+
+        .btn-group { display: flex; gap: 8px; }
+        .omni-btn {
+            padding: 6px 12px; background-color: #00ff66; color: black;
+            border: none; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;
+            font-family: monospace; transition: all 0.2s;
+        }
+        .omni-btn:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,255,100,0.4); }
+        .btn-secondary { background-color: #000; color: #00ff66; border: 1px solid #00ff66; }
+        
+        /* การ์ดสแตทตัวเลขลอยขึ้น */
+        .floating-text {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff3333;
+            text-shadow: 0 0 8px #000;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+        }
+        @keyframes float-up-fade {
+            0% { opacity: 1; transform: translate(-50%, -20%) scale(0.8); }
+            100% { opacity: 0; transform: translate(-50%, -100%) scale(1.4); }
+        }
+        .float-anim { animation: float-up-fade 0.8s ease-out forwards; }
     </style>
 </head>
 <body>
 
-    <h1>⚔️ OMNITRIX STORY RPG V9</h1>
-    <div class="subtitle">Devops-02: ระบบขโมยนาฬิกา ระบบหมดเวลา และระบบดรอปอาวุธเศษซากอวกาศ</div>
+    <h1>LC-OMNITRIX: SOUND & ANIMATION V15</h1>
+    <div class="subtitle">ระบบวิวัฒนาการร่างแยกอัตลักษณ์เอเลี่ยน 20 รูปแบบ ผสานเอฟเฟกต์ภาพและเสียงสังเคราะห์ Web Audio</div>
 
-    <div class="story-box" id="story-text">🎬 บทนำ: วิลแกกซ์ บุกมายังโลกเพื่อชิงเกราะสายพันธุ์อวกาศ Omnitrix! เบ็นต้องจับตาดูนาฬิกาไว้ให้ดี!</div>
-
-    <div class="omni-status-panel" id="omniStatus">
-        <span>⌚ อุปกรณ์: <span id="omni-mode-text">Omnitrix Standard</span></span>
-        <span>⭐ เลเวลเอเลี่ยนทั้งหมด: LV.<span id="alien-lv">1</span> (+<span id="alien-bonus">0</span> DMG)</span>
-        <span>💎 คอร์อัปเกรด: <span id="count-core">0</span> ชิ้น</span>
+    <div class="story-box">
+        <div style="font-weight: bold; color: #ffaa00;" id="story-chapter">SEGMENT 01: THE OMNI CORROSION</div>
+        <div id="story-text">รหัสพันธุกรรมเกิดความผันผวนอย่างรุนแรง เบ็นต้องดึงพลังขีดสุดออกมารับมือศัตรู...</div>
     </div>
 
-    <div class="battle-arena">
-        <div class="unit-box boss-side">
-            <div style="font-size: 16px; font-weight: bold; color: #ff3333;" id="boss-name-display">🐙 Vilgax</div>
-            <div style="font-size: 11px;">HP: <span id="boss-hp-text">120</span> / <span id="boss-max-hp-text">120</span></div>
-            <div class="hp-container"><div class="hp-bar" id="bossHpBar"></div></div>
-        </div>
-
-        <div class="unit-box player-side" id="playerSideBox">
-            <div style="font-size: 16px; font-weight: bold; color: #00ff00;" id="player-name-display">🟢 Ben Tennyson (ร่างมนุษย์)</div>
-            <div style="font-size: 11px;">HP: <span id="player-hp-text">100</span> / 100</div>
-            <div class="hp-container"><div class="hp-bar" id="playerHpBar"></div></div>
-            <div style="font-size: 11px; color: #ffaa00;">🔋 พลังงานนาฬิกา: <span id="energy-text">100</span>%</div>
-            <div class="energy-container"><div class="energy-bar" id="energyBar"></div></div>
-        </div>
-
-        <div class="log-box" id="battle-log">เลือกเอเลี่ยนแล้วคลิกแปลงร่างเพื่อเข้าสู่การต่อสู้!</div>
+    <div class="clash-preview-panel" id="clashPreview">
+        🎯 [ระบบทำนาย]: ตรวจสอบกระบวนท่าบอสสำเร็จ กรุณาเลือกเอเลี่ยนเพื่อคำนวณการชนสกิล
     </div>
 
-    <div class="inventory-section">
-        <div style="text-align:center; font-weight:bold; color:#ffaa00;">🎒 คลังอาวุธมนุษย์ & เสบียงอาหารที่ดรอปมาได้:</div>
-        <div class="inv-grid">
-            <button class="inv-btn" id="use-gun" onclick="useHumanWeapon('gun', 15)">🔫 ปืนเลเซอร์ช่างประปา (ดาเมจ 15) [<span id="qty-gun">0</span>]</button>
-            <button class="inv-btn" id="use-sword" onclick="useHumanWeapon('sword', 30)">⚔️ ดาบแอสคัลลอน (ดาเมจ 30) [<span id="qty-sword">0</span>]</button>
-            <button class="inv-btn" id="use-smoothie" onclick="useFood()">🍔 มินิสมูทตี้ (+25 HP) [<span id="qty-smoothie">2</span>]</button>
-            <button class="inv-btn" style="border-color:#ffaa00; color:#ffaa00;" id="btn-upgrade-alien" onclick="upgradeAliensPermanently()">🧬 กดอัปเกรดเอเลี่ยนทุกตัว (ใช้ 3 คอร์)</button>
+    <div class="battle-arena" id="battleArena">
+        <div class="unit-box boss-side" id="bossCard">
+            <div class="floating-text" id="bossFloatText">💥 -50</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 14px; font-weight: bold; color: #ff3333;" id="boss-name-display">🐙 Vilgax</span>
+                <span class="sp-badge sp-negative">BOSS SP</span>
+            </div>
+            <div class="bar-label">
+                <span>HP ศัตรูเป้าหมาย</span>
+                <span><span id="boss-hp-text">150</span> / <span id="boss-max-hp-text">150</span></span>
+            </div>
+            <div class="gauge-container"><div class="gauge-bar hp-boss" id="bossHpBar"></div></div>
+            <div style="font-size: 11px; color: #ff8888; margin-top: 4px;" id="boss-skill-alert">
+                ⚠️ [วิเคราะห์กระบวนท่า]: สกิลถัดไป -> พลังพื้นฐาน 10
+            </div>
+        </div>
+
+        <div class="unit-box player-side" id="playerCard">
+            <div class="floating-text" id="playerFloatText" style="color: #00ff66;">💥 -20</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 14px; font-weight: bold; color: #00ff66;" id="player-name-display">🟢 Ben (ร่างมนุษย์)</span>
+                <span class="sp-badge sp-positive" id="player-sp-display">SP: 0</span>
+            </div>
+            <div style="font-size: 10px; color: #ffaa00; font-weight: bold; display: flex; justify-content: space-between;" id="evolution-status">
+                <span>🧬 สภาวะพันธุกรรม: ร่างปกติธรรมดา</span>
+                <span id="sin-affinity-display"></span>
+            </div>
+
+            <div class="passive-panel" id="passive-display">
+                💡 สกิลติดตัวประจำอัตลักษณ์: คืนสภาพปกติ (ยังไม่ได้เลือกแปลงสายพันธุ์ดีเอ็นเอ)
+            </div>
+            
+            <div class="bar-label">
+                <span>HP กายเนื้อ</span>
+                <span><span id="player-hp-text">100</span> / 100</span>
+            </div>
+            <div class="gauge-container"><div class="gauge-bar hp-player" id="playerHpBar"></div></div>
+
+            <div class="bar-label">
+                <span>🔋 พลังงาน Omnitrix Core</span>
+                <span><span id="energy-text">100</span>%</span>
+            </div>
+            <div class="gauge-container"><div class="gauge-bar energy-bar" id="energyBar"></div></div>
+        </div>
+
+        <div class="log-box" id="battle-log">เลือกดีเอ็นเอเอเลี่ยนด้านล่าง หรือกดปุ่มหมุนวงแหวนสุ่มตัว! เอเลี่ยนแต่ละตัวมีความสามารถเชิงลึกสไตล์ Limbus Company และรอบนี้มาพร้อมเอฟเฟกต์เสียงสมบูรณ์แบบ!</div>
+    </div>
+
+    <div class="action-panel">
+        <div class="action-grid">
+            <button class="act-btn" id="btn-punch" onclick="executeAction('punch')">👊 หมัดสับ<br>พลัง 6 (3 เหรียญ)</button>
+            <button class="act-btn" id="btn-kick" onclick="executeAction('kick')">🦵 เตะกวาด<br>พลัง 10 (2 เหรียญ)</button>
+            <button class="act-btn btn-ego-awaken" id="btn-ego" onclick="executeAction('ego')">🔮 E.G.O ปลุกพลัง<br>พลัง 15 (4 เหรียญ)</button>
+            <button class="act-btn btn-evade-style" id="btn-evade" onclick="executeAction('evade')">💨 ถอยฉาก<br>โอกาสหลบ 50%</button>
+        </div>
+        
+        <div class="control-grid">
+            <button class="act-btn btn-ultimate-evolve" id="btn-ultimate-trigger" onclick="toggleUltimateEvolution()">🔺 ULTIMATE EVOLUTION (เปิด/ปิด อัลติเมตโมเดล)</button>
         </div>
     </div>
 
     <div class="alien-grid" id="alienGrid"></div>
 
-    <div class="omnitrix-dial" onclick="activateTransformation()">
+    <div class="omnitrix-dial" id="omniDial" onclick="triggerRandomAlien()">
         <div class="core" id="omni-core">🟢</div>
     </div>
 
     <div class="btn-group">
-        <button class="omni-btn" id="btn-transform" onclick="activateTransformation()">ตบหน้าปัดเพื่อแปลงร่าง! ⚡</button>
-        <button class="omni-btn btn-attack" id="btn-attack" onclick="playerTurn()">💥 สั่งโจมตีบอส!</button>
-        <button class="omni-btn btn-secondary" id="btn-random" onclick="triggerRandom()">🌌 สุ่มค้นหา DNA</button>
-        <button class="omni-btn btn-secondary" id="btn-reset" onclick="resetGame()" style="display:none; background-color:#ff3333; color:white;">REBOOT SYSTEM</button>
+        <button class="omni-btn btn-secondary" id="btn-random" onclick="triggerRandomAlien()">🌌 🔘 กดสุ่มดีเอ็นเอกระทันหัน</button>
+        <button class="omni-btn" id="btn-reset" onclick="resetGame()" style="display:none; background-color:#ff3333; color:white;">REBOOT SYSTEM</button>
     </div>
 
     <script>
+        // --- ระบบเสียงสังเคราะห์ (Web Audio API Synthesizer) ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                
+                const now = audioCtx.currentTime;
+                
+                if (type === 'transform') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, now);
+                    osc.frequency.exponentialRampToValueAtTime(700, now + 0.35);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } 
+                else if (type === 'punch' || type === 'kick') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(160, now);
+                    osc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } 
+                else if (type === 'ego') {
+                    const osc1 = audioCtx.createOscillator();
+                    const osc2 = audioCtx.createOscillator();
+                    const gain1 = audioCtx.createGain();
+                    const gain2 = audioCtx.createGain();
+                    
+                    osc1.type = 'sine';
+                    osc1.frequency.setValueAtTime(350, now);
+                    osc1.frequency.linearRampToValueAtTime(120, now + 0.6);
+                    gain1.gain.setValueAtTime(0.2, now);
+                    gain1.gain.linearRampToValueAtTime(0.001, now + 0.6);
+                    
+                    osc2.type = 'sawtooth';
+                    osc2.frequency.setValueAtTime(90, now);
+                    osc2.frequency.linearRampToValueAtTime(250, now + 0.6);
+                    gain2.gain.setValueAtTime(0.08, now);
+                    gain2.gain.linearRampToValueAtTime(0.001, now + 0.6);
+                    
+                    osc1.connect(gain1); gain1.connect(audioCtx.destination);
+                    osc2.connect(gain2); gain2.connect(audioCtx.destination);
+                    
+                    osc1.start(now); osc1.stop(now + 0.6);
+                    osc2.start(now); osc2.stop(now + 0.6);
+                } 
+                else if (type === 'win') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now); 
+                    osc.frequency.setValueAtTime(659.25, now + 0.08); 
+                    osc.frequency.setValueAtTime(783.99, now + 0.16); 
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                } 
+                else if (type === 'lose') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(95, now);
+                    osc.frequency.linearRampToValueAtTime(40, now + 0.45);
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.45);
+                } 
+                else if (type === 'evade') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(500, now);
+                    osc.frequency.exponentialRampToValueAtTime(1300, now + 0.14);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.14);
+                }
+                else if (type === 'ultimate') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(80, now);
+                    osc.frequency.linearRampToValueAtTime(300, now + 0.4);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.4);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.4);
+                }
+            } catch (e) {
+                console.log("Audio not supported yet: ", e);
+            }
+        }
+
+        // --- ข้อมูลระบบหลักตัวเกม ---
+        const sins = {
+            Wrath: { name: "Wrath", color: "#cc0000" },
+            Lust: { name: "Lust", color: "#ff6600" },
+            Sloth: { name: "Sloth", color: "#cccc00" },
+            Gluttony: { name: "Gluttony", color: "#339933" },
+            Gloom: { name: "Gloom", color: "#3399ff" },
+            Pride: { name: "Pride", color: "#0033cc" },
+            Envy: { name: "Envy", color: "#9900cc" }
+        };
+
         const alienList = [
-            { name: "Heatblast", icon: "🔥", dmg: 22 }, { name: "Four Arms", icon: "💪", dmg: 28 },
-            { name: "XLR8", icon: "⚡", dmg: 16 }, { name: "Diamondhead", icon: "💎", dmg: 20 },
-            { name: "Upgrade", icon: "🦾", dmg: 24 }, { name: "Stinkfly", icon: "🤢", dmg: 14 },
-            { name: "Grey Matter", icon: "🧠", dmg: 10 }, { name: "Wildmutt", icon: "🐺", dmg: 18 },
-            { name: "Ripjaws", icon: "🦈", dmg: 19 }, { name: "Ghostfreak", icon: "👻", dmg: 17 },
-            { name: "Cannonbolt", icon: "⚽", dmg: 25 }, { name: "Wildvine", icon: "🌿", dmg: 15 },
-            { name: "Swampfire", icon: "🌳", dmg: 24 }, { name: "Humungousaur", icon: "🦖", dmg: 32 },
-            { name: "Big Chill", icon: "🦋", dmg: 21 }, { name: "Jetray", icon: "✈️", dmg: 20 },
-            { name: "Chromastone", icon: "🔮", dmg: 23 }, { name: "Brainstorm", icon: "🦀", dmg: 22 },
-            { name: "Echo Echo", icon: "🔊", dmg: 18 }, { name: "Alien X", icon: "🌌", dmg: 45 }
+            { name: "Heatblast", icon: "🔥", baseBonus: 4, sin: sins.Wrath, passiveDesc: "🔥 เพลิงบาปแผดเผา: ท่าโจมตีประเภทหมัด (Punch) แรงขึ้น +4 พลังพื้นฐาน" },
+            { name: "Four Arms", icon: "💪", baseBonus: 4, sin: sins.Wrath, passiveDesc: "💪 แขนทรงพลัง: ท่าหมัดและเตะปกติ ได้รับจำนวนเหรียญทอยเพิ่มขึ้น +1 เหรียญ" },
+            { name: "XLR8", icon: "⚡", baseBonus: 2, sin: sins.Envy, passiveDesc: "⚡ ความเร็วแสง: เพิ่มสปีดการพลิกตัวหลบหลีก (Evade) เป็นสำเร็จสูงถึง 85%" },
+            { name: "Diamondhead", icon: "💎", baseBonus: 4, sin: sins.Pride, passiveDesc: "💎 เกราะเพชรสะท้อน: ลดความเสียหายที่ได้รับจากการแพ้ปะทะลง 50%" },
+            { name: "Upgrade", icon: "🦾", baseBonus: 4, sin: sins.Gloom, passiveDesc: "🦾 แฮกคอร์ระบบ: คืนพลังงานนาฬิกาเพิ่มเติมอีก +20% ทุกครั้งหลังออกท่าทาง" },
+            { name: "Stinkfly", icon: "🤢", baseBonus: 2, sin: sins.Gluttony, passiveDesc: "🤢 เมือกพิษรบกวน: ทุกครั้งที่กดโจมตี บอสจะทอยเหรียญติดหัวยากขึ้น -10%" },
+            { name: "Grey Matter", icon: "🧠", baseBonus: 0, sin: sins.Sloth, passiveDesc: "🧠 อัจฉริยะวิเคราะห์: เพิ่มอัตราความแม่นยำในการทอยติดหน้าหัว (Heads) +20%" },
+            { name: "Wildmutt", icon: "🐺", baseBonus: 3, sin: sins.Lust, passiveDesc: "🐺 สัญชาตญาณสัตว์ป่า: หากค่าพลังงานนาฬิกาเต็ม 100% พลังพื้นฐานโจมตี +5" },
+            { name: "Ripjaws", icon: "🦈", baseBonus: 3, sin: sins.Gluttony, passiveDesc: "🦈 ขากรรไกรกระชาก: หากบอสเหลือเลือดต่ำกว่า 50% ท่าโจมตีเตะกวาดจะแรงขึ้น +6" },
+            { name: "Ghostfreak", icon: "👻", baseBonus: 2, sin: sins.Envy, passiveDesc: "👻 ร่างไร้สัมผัส: ร่างโปร่งแสงไร้สภาพจิตใจ เมื่อแพ้ปะทะจะไม่เสียค่า SP เลย" },
+            { name: "Cannonbolt", icon: "⚽", baseBonus: 5, sin: sins.Sloth, passiveDesc: "⚽ เกราะกลิ้งหุ้มห่อ: หากบอสใช้สกิลไม้ตายสีแดง จะลดดาเมจที่ผ่านเข้ามาลง 40%" },
+            { name: "Wildvine", icon: "🌿", baseBonus: 2, sin: sins.Gluttony, passiveDesc: "🌿 เถาวัลย์เหนี่ยวรั้ง: ทุกครั้งที่ชนปะทะเสมอ บอสจะได้รับความเสียหายฟรี 8หน่วย" },
+            { name: "Swampfire", icon: "🌳", baseBonus: 5, sin: sins.Lust, passiveDesc: "🌳 ฟื้นฟูเนื้อเยื่อ: หลังจากจบหนึ่งเทิร์น จะฟื้นฟู HP กายเนื้อตนเองอัตโนมัติ +8" },
+            { name: "Humungousaur", icon: "🦖", baseBonus: 6, sin: sins.Wrath, passiveDesc: "🦖 ยักษ์ใหญ่ขยายร่าง: เพิ่มพลังพื้นฐานพุ่งทะยานแรงขึ้นตามระดับ HP ปัจจุบันของบอส" },
+            { name: "Big Chill", icon: "🦋", baseBonus: 4, sin: sins.Gloom, passiveDesc: "🦋 ลมหายใจเยือกแข็ง: หากชนะการปะทะสำเร็จ บอสจะโดนลดแต้มพลังเทิร์นถัดไป -3" },
+            { name: "Jetray", icon: "✈️", baseBonus: 3, sin: sins.Pride, passiveDesc: "✈️ ลำแสงนิวโรช็อก: การใช้สกิล E.G.O จะจ่ายพลังงานนาฬิกาประหยัดลงเหลือ 30%" },
+            { name: "Chromastone", icon: "🔮", baseBonus: 5, sin: sins.Pride, passiveDesc: "🔮 คริสตัลดูดซับ:  แปลงพลังโจมตีของบอสที่ฟาดเข้ามา มาเพิ่มแต้มฟื้นฟู SP +10" },
+            { name: "Brainstorm", icon: "🦀", baseBonus: 4, sin: sins.Pride, passiveDesc: "🦀 คลื่นสมองคำนวณ: หากค่าสภาพจิตใจ (SP) เป็นบวก พลังทอยเหรียญจะแรงขึ้น +2" },
+            { name: "Echo Echo", icon: "🔊", baseBonus: 3, sin: sins.Gloom, passiveDesc: "🔊 คลื่นเสียงแยกแฝง: สกิลหมัดสับ (Punch) จะได้รับจำนวนเหรียญทอยเบิ้ล +1 เหรียญ" },
+            { name: "Alien X", icon: "🌌", baseBonus: 15, sin: sins.Envy, passiveDesc: "🌌 เจตจำนงอนันต์: ดาเมจพื้นฐานสูงสุดขีด แต่จะหักพลังงาน Omnitrix เพิ่มเป็น 2 เท่า!" }
         ];
 
         const bossList = [
-            { name: "🐙 Vilgax (วิลแกกซ์)", maxHp: 130, atk: 15, intro: "🎬 เนื้อเรื่อง: วิลแกกซ์นำยานรบมาปิดล้อมโลก! ระวัง! มันจ้องจะขโมยนาฬิกาของคุณ!" },
-            { name: "🤠 Khyber (ไคเบอร์ พรานอวกาศ)", maxHp: 150, atk: 18, intro: "🎬 เนื้อเรื่อง: ไคเบอร์ผิวปากสั่งให้สัตว์ร้ายเนเมทริกซ์กระโจนเข้าขย้ำคุณ!" },
-            { name: "🔴 Malware (มัลแวร์ผู้บิดเบี้ยว)", maxHp: 200, atk: 22, intro: "🎬 เนื้อเรื่อง: มัลแวร์พยายามกลืนกินเทคโนโลยีระบบดักจับพลังงานของ Omnitrix!" }
+            { name: "🐙 Vilgax (Sector 1)", maxHp: 150, baseAtk: 8, coins: 2, coinVal: 4, skillName: "ลำแสงเลเซอร์โอเมก้ากวาดล้าง", chapter: "SEGMENT 01: THE OMNI CORROSION", text: "วิลแกกซ์ผู้ทำลายล้าง มุ่งหน้ามาเพื่อยึดโครงสร้างแกนพลังงานเพื่อแปลงข้อมูลอัตลักษณ์" },
+            { name: "🤠 Khyber (Sector 2)", maxHp: 200, baseAtk: 12, coins: 2, coinVal: 5, skillName: "กรงเล็บสังหารเนเมทริกซ์ทะลวงจิต", chapter: "SEGMENT 02: THE PREDATOR'S WAKE", text: "พรานล่าหัวแห่งมิติมืด ปล่อยกระบวนท่าที่ยากต่อการชนปะทะ จงใช้อัลติเมตรับมือ" },
+            { name: "🔴 Malware (Sector 3)", maxHp: 260, baseAtk: 15, coins: 3, coinVal: 4, skillName: "ลบข้อมูลสารสนเทศพลาสม่า", chapter: "SEGMENT 03: SYSTEM OVERWRITE", text: "มัลแวร์ทำการแฮกพิกัด ดาเมจสุ่มเหรียญของมันค่อนข้างเสถียรและรุนแรง" },
+            { name: "👑 Ultimate Vilgax (Final)", maxHp: 380, baseAtk: 20, coins: 3, coinVal: 6, skillName: "ระเบิดดาบเทวะทลายจักรวาล", chapter: "FINAL SEGMENT: THE LIMIT BREAKER", text: "ศึกตัดสินชะตากรรม! บอสใช้ท่าไม้ตายระดับล้างระบบแทบทุกเทิร์น" }
         ];
 
         let currentBossIndex = 0;
         let bossHp = bossList[0].maxHp;
         let playerHp = 100;
+        let playerSP = 0; 
+        let omnitrixEnergy = 100;
         let selectedAlienIndex = null;
-        let isScanning = false;
+        
         let hasTransformed = false;
+        let isUltimateActive = false;
         let isGameOver = false;
+        let isPlayerTurn = true;
+        let isEvadingMode = false;
+        let debuffOnBossNextTurn = 0;
 
-        // ระบบ V9 ใหม่
-        let omnitrixEnergy = 100; 
-        let isStolen = false; 
-        let isTimeout = false;
-        let alienLevel = 1;
-        let alienBonusDmg = 0;
-
-        // คลังสิ่งของดรอป
-        let inventory = { gun: 0, sword: 0, smoothie: 2, cores: 0 };
+        let currentBossSkill = { name: "", basePower: 0, coins: 0, coinValue: 0, isFatal: false };
 
         function initGame() {
             const grid = document.getElementById('alienGrid');
@@ -284,259 +613,443 @@
                 const item = document.createElement('div');
                 item.classList.add('alien-item');
                 item.id = `alien-${index}`;
-                item.innerText = `${alien.icon} ${alien.name}`;
-                item.onclick = () => selectAlien(index);
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.innerText = `${alien.icon} ${alien.name}`;
+                
+                const sinTag = document.createElement('div');
+                sinTag.classList.add('sin-tag');
+                sinTag.style.backgroundColor = alien.sin.color;
+                sinTag.innerText = alien.sin.name;
+
+                item.appendChild(nameSpan);
+                item.appendChild(sinTag);
+                item.onclick = () => selectAlienIdentity(index);
                 grid.appendChild(item);
             });
-            document.getElementById('story-text').innerText = bossList[currentBossIndex].intro;
+            rollBossSkillForecast();
+            updateStoryBox();
             updateUI();
         }
 
-        function selectAlien(index) {
-            if (isScanning || isGameOver || isStolen || isTimeout) return;
-            if (selectedAlienIndex !== null) document.getElementById(`alien-${selectedAlienIndex}`).classList.remove('selected');
+        function updateStoryBox() {
+            const boss = bossList[currentBossIndex];
+            document.getElementById('story-chapter').innerText = boss.chapter;
+            document.getElementById('story-text').innerText = boss.text;
+        }
+
+        function triggerAnimation(elementId, animClass) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.classList.remove(animClass);
+            void el.offsetWidth; 
+            el.classList.add(animClass);
+            setTimeout(() => el.classList.remove(animClass), 400);
+        }
+
+        function showFloatingText(elementId, text, isDmg = true) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            el.innerText = text;
+            el.style.color = isDmg ? '#ff3333' : '#00ff66';
+            el.classList.remove('float-anim');
+            void el.offsetWidth;
+            el.classList.add('float-anim');
+        }
+
+        function rollBossSkillForecast() {
+            if (isGameOver) return;
+            const boss = bossList[currentBossIndex];
+            
+            let isFatal = Math.random() < 0.45;
+            if (isFatal) {
+                currentBossSkill.name = `🚨 [สกิลไม้ตายบอส] ${boss.skillName}`;
+                currentBossSkill.basePower = boss.baseAtk + 6 - debuffOnBossNextTurn;
+                currentBossSkill.coins = boss.coins + 1;
+                currentBossSkill.coinValue = boss.coinVal + 2;
+                currentBossSkill.isFatal = true;
+            } else {
+                currentBossSkill.name = `⚔️ [โจมตีปกติ] ทะลวงเกราะหน้าผาก`;
+                currentBossSkill.basePower = boss.baseAtk - debuffOnBossNextTurn;
+                currentBossSkill.coins = boss.coins;
+                currentBossSkill.coinValue = boss.coinVal;
+                currentBossSkill.isFatal = false;
+            }
+            if(currentBossSkill.basePower < 1) currentBossSkill.basePower = 1;
+            debuffOnBossNextTurn = 0; 
+
+            const forecastPanel = document.getElementById('clashPreview');
+            const alertText = document.getElementById('boss-skill-alert');
+            let maxPossible = currentBossSkill.basePower + (currentBossSkill.coins * currentBossSkill.coinValue);
+            
+            alertText.innerText = `⚠️ [กระบวนท่าที่บอสจะใช้]: ท่า [${currentBossSkill.name}] พลังพื้นฐาน ${currentBossSkill.basePower} (${currentBossSkill.coins} เหรียญ) ค่าพลังสูงสุดคือ ${maxPossible}`;
+            
+            if (currentBossSkill.isFatal) {
+                forecastPanel.innerText = `⚠️ บอสกำลังจะใช้สกิลแรงมาก! แนะนำเปิดร่าง "ULTIMATE EVOLUTION" หรือศึกษาคุณสมบัติสกิลติดตัวของเอเลี่ยนมาชนปะทะ!`;
+                forecastPanel.style.color = "#ff3333";
+                forecastPanel.style.borderColor = "#ff3333";
+            } else {
+                forecastPanel.innerText = `🟢 ท่าโจมตีบอสรอบนี้ระดับทั่วไป สามารถกดสลับตัวเอเลี่ยนเพื่อชนปะทะเก็บค่าจิตใจได้`;
+                forecastPanel.style.color = "#00ff66";
+                forecastPanel.style.borderColor = "#113311";
+            }
+        }
+
+        function selectAlienIdentity(index) {
+            if (isGameOver || !isPlayerTurn) return;
+            initAudio();
+
+            if (selectedAlienIndex !== null) {
+                const oldElement = document.getElementById(`alien-${selectedAlienIndex}`);
+                if (oldElement) oldElement.classList.remove('selected');
+            }
             
             selectedAlienIndex = index;
             document.getElementById(`alien-${index}`).classList.add('selected');
-            document.getElementById('omni-core').innerText = alienList[index].icon;
             
-            hasTransformed = false;
-            document.getElementById('btn-attack').style.display = 'none';
-            document.getElementById('btn-transform').style.display = 'inline-block';
-            document.getElementById('battle-log').innerText = `ตั้งเป้าหมาย DNA: ${alienList[index].name} ตบหน้าปัดเพื่อเปลี่ยนร่าง!`;
+            isUltimateActive = false;
+            playSound('transform');
+            triggerAnimation('omniDial', 'spin-effect');
+            applyAlienNameDisplay();
         }
 
-        function triggerRandom() {
-            if (isScanning || isGameOver || isStolen || isTimeout) return;
+        function triggerRandomAlien() {
+            if (isGameOver || !isPlayerTurn) return;
+            initAudio();
             const randomIndex = Math.floor(Math.random() * alienList.length);
-            selectAlien(randomIndex);
-            activateTransformation();
+            selectAlienIdentity(randomIndex);
         }
 
-        function activateTransformation() {
-            if (isScanning || isGameOver || isStolen || isTimeout) return;
-            if (selectedAlienIndex === null) { alert("❌ กรุณาเลือกเอเลี่ยนก่อนครับ!"); return; }
+        function toggleUltimateEvolution() {
+            if (isGameOver || !isPlayerTurn) return;
+            initAudio();
+            if (selectedAlienIndex === null) {
+                triggerRandomAlien();
+            }
 
-            isScanning = true;
-            document.getElementById('omni-core').classList.add('scanning');
-            document.getElementById('battle-log').innerText = "⚡ โครงสร้างโมเลกุลกำลังซิงโครไนซ์...";
+            if (omnitrixEnergy < 20 && !isUltimateActive) {
+                alert("🔋 พลังงานนาฬิกาไม่พอสำหรับการกระตุ้นวิวัฒนาการอัลติเมต! (ต้องการขั้นต่ำ 20%)");
+                return;
+            }
 
+            isUltimateActive = !isUltimateActive;
+            playSound('ultimate');
+            triggerAnimation('omniDial', 'spin-effect');
+            
+            if (isUltimateActive) {
+                omnitrixEnergy -= 20;
+                document.getElementById('battle-log').innerText = `🔺 [ULTIMATE EVOLUTION]: พัฒนาร่างขึ้นสุดขีด! เอฟเฟกต์ภาพและเสียงนาฬิกาจะเร่งเครื่องทำรอบสูงสุด!`;
+            } else {
+                document.getElementById('battle-log').innerText = `🔄 คืนสภาพสายพันธุ์กลับสู่โมเดลดีเอ็นเอระดับมาตรฐาน`;
+            }
+            applyAlienNameDisplay();
+            updateUI();
+        }
+
+        function applyAlienNameDisplay() {
+            const alien = alienList[selectedAlienIndex];
+            const core = document.getElementById('omni-core');
+            const nameDisplay = document.getElementById('player-name-display');
+            const evoStatus = document.getElementById('evolution-status').children[0];
+            const sinDisplay = document.getElementById('sin-affinity-display');
+            const passiveDisplay = document.getElementById('passive-display');
+
+            hasTransformed = true;
+            core.innerText = alien.icon;
+
+            sinDisplay.innerText = `[${alien.sin.name}]`;
+            sinDisplay.style.color = alien.sin.color;
+            passiveDisplay.innerText = `💡 สกิลติดตัวอัตลักษณ์: ${alien.passiveDesc}`;
+
+            if (isUltimateActive) {
+                nameDisplay.innerText = `🔥 Ultimate ${alien.name}`;
+                nameDisplay.style.color = "#ffaa00";
+                evoStatus.innerText = `🧬 สภาวะพันธุกรรม: 🔺 อัลติเมตโมเดล`;
+                evoStatus.style.color = "#ffaa00";
+            } else {
+                nameDisplay.innerText = `🟢 Ben (${alien.name})`;
+                nameDisplay.style.color = "#00ff66";
+                evoStatus.innerText = `🧬 สภาวะพันธุกรรม: ร่างปกติธรรมดา`;
+                evoStatus.style.color = "#ffaa00";
+            }
+        }
+
+        function executeAction(actionType) {
+            if (!isPlayerTurn || isGameOver) return;
+            initAudio();
+
+            if (!hasTransformed && actionType !== 'evade') {
+                triggerRandomAlien();
+            }
+
+            const alien = alienList[selectedAlienIndex] || { name: "ร่างมนุษย์", baseBonus: 0, sin: { name: "None" }, passiveDesc: "" };
+            
+            let ultimatePowerBonus = isUltimateActive ? 6 : 0;
+            let ultimateCoinBonus = isUltimateActive ? 1 : 0;
+
+            let pBase = 0;
+            let pCoins = 0;
+            let pCoinVal = 0;
+            let actionName = "";
+
+            if (actionType === 'evade') {
+                playSound('evade');
+                isEvadingMode = true;
+                let evadeChance = (alien.name === "XLR8") ? 0.85 : 0.50;
+                let evadeRoll = Math.random();
+                
+                triggerAnimation('playerCard', 'flash-green-effect');
+                
+                if (evadeRoll < evadeChance) {
+                    document.getElementById('battle-log').innerText = `💨 [EVADE ROLL]: (${alien.name}) เคลื่อนไหวรวดเร็ว... ทอยหลบหลีกสำเร็จ!`;
+                    executeEnemyTurnDirectly(true);
+                } else {
+                    document.getElementById('battle-log').innerText = `❌ [EVADE ROLL]: พยายามก้าวฉีกตัวหลบหลีก... แต่เสียหลักจับจังหวะพลาด!`;
+                    executeEnemyTurnDirectly(false);
+                }
+                return;
+            }
+
+            if (actionType === 'punch' || actionType === 'kick') {
+                playSound(actionType);
+            } else if (actionType === 'ego') {
+                let energyCost = (alien.name === "Alien X") ? 80 : (alien.name === "Jetray" ? 30 : 40);
+                if (omnitrixEnergy < energyCost) { 
+                    alert(`🔋 พลังงานไม่พอสำหรับเปิดใช้งานคอร์ E.G.O ของตัวนี้! (ต้องการ ${energyCost}%)`); 
+                    return; 
+                }
+                omnitrixEnergy -= energyCost;
+                playSound('ego');
+            }
+
+            if (actionType === 'punch') {
+                pBase = 6 + alien.baseBonus + ultimatePowerBonus; 
+                pCoins = 3 + ultimateCoinBonus; 
+                pCoinVal = 3; 
+                actionName = isUltimateActive ? "มหาหมัดกระแทกมิติตอบโต้" : "หมัดสับฮุกขวา";
+                if (alien.name === "Heatblast") pBase += 4;
+                if (alien.name === "Echo Echo") pCoins += 1;
+                
+            } else if (actionType === 'kick') {
+                pBase = 10 + alien.baseBonus + ultimatePowerBonus; 
+                pCoins = 2 + ultimateCoinBonus; 
+                pCoinVal = 5; 
+                actionName = isUltimateActive ? "ลูกเตะพายุหมุนอัลติเมต" : "เตะกวาดส้นตัดกำลัง";
+                if (alien.name === "Ripjaws" && (bossHp < (bossList[currentBossIndex].maxHp / 2))) pBase += 6;
+
+            } else if (actionType === 'ego') {
+                if (playerSP < 0) {
+                    actionName = `🩸 E.G.O CORROSION (${alien.sin.name} บาปกัดกร่อน) 🩸`;
+                    pBase = 20 + alien.baseBonus + ultimatePowerBonus; 
+                    pCoins = 4 + ultimateCoinBonus; 
+                    pCoinVal = 7;
+                    playerHp -= 15; 
+                    if (playerHp < 0) playerHp = 0;
+                    triggerAnimation('playerCard', 'shake-effect');
+                    triggerAnimation('playerCard', 'flash-red-effect');
+                } else {
+                    actionName = `🔮 ปลดปล่อยขีดจำกัดสูงสุด E.G.O Awakening 🌌`;
+                    pBase = 15 + alien.baseBonus + ultimatePowerBonus; 
+                    pCoins = 4 + ultimateCoinBonus; 
+                    pCoinVal = 6; 
+                    triggerAnimation('playerCard', 'flash-green-effect');
+                }
+            }
+
+            if (alien.name === "Four Arms") pCoins += 1;
+            if (alien.name === "Alien X") pBase += 15;
+            if (alien.name === "Wildmutt" && omnitrixEnergy >= 95) pBase += 5;
+            if (alien.name === "Brainstorm" && playerSP > 0) pBase += 2;
+            if (alien.name === "Humungousaur") {
+                let hpRatio = bossHp / bossList[currentBossIndex].maxHp;
+                pBase += Math.floor(hpRatio * 6);
+            }
+
+            let headsChance = 0.50 + (playerSP / 100);
+            if (alien.name === "Grey Matter") headsChance += 0.20;
+            if (headsChance < 0.05) headsChance = 0.05;
+            if (headsChance > 0.95) headsChance = 0.95;
+
+            let pFinalPower = pBase;
+            let pHeadsCount = 0;
+            for (let i = 0; i < pCoins; i++) {
+                if (Math.random() < headsChance) { pFinalPower += pCoinVal; pHeadsCount++; }
+            }
+
+            let bossHeadsChance = 0.50;
+            if (alien.name === "Stinkfly") bossHeadsChance -= 0.10;
+            
+            let bFinalPower = currentBossSkill.basePower;
+            let bHeadsCount = 0;
+            for (let i = 0; i < currentBossSkill.coins; i++) {
+                if (Math.random() < bossHeadsChance) { bFinalPower += currentBossSkill.coinValue; bHeadsCount++; }
+            }
+
+            let logResult = `⚔️ [CLASH PHASE]: คุณใช้ [${actionName}]\n🎯 หน้าหัวฝั่งคุณ (${pHeadsCount}/${pCoins}) รวมพลัง: ${pFinalPower}\n`;
+            logResult += `🐙 บอสใช้ [${currentBossSkill.name}]\n🎯 หน้าหัวบอส (${bHeadsCount}/${currentBossSkill.coins}) รวมพลัง: ${bFinalPower}\n\n`;
+
+            if (pFinalPower > bFinalPower) {
+                let dmg = pFinalPower;
+                bossHp -= dmg; if (bossHp < 0) bossHp = 0;
+                playerSP += 15; if (playerSP > 45) playerSP = 45;
+                
+                playSound('win');
+                triggerAnimation('bossCard', 'shake-effect');
+                triggerAnimation('bossCard', 'flash-red-effect');
+                showFloatingText('bossFloatText', `💥 -${dmg}`);
+                
+                logResult += `🏆 [💥 CLASH WIN]: หักล้างสกิลบอสสำเร็จ! สร้างความเสียหาย -${dmg} HP! (SP +15)`;
+                
+                if (alien.name === "Big Chill") {
+                    debuffOnBossNextTurn = 3;
+                    logResult += `\n🦋 [PASSIVE]: ไอเย็นเกาะกุม ลดพลังพื้นฐานบอสในเทิร์นหน้าลง -3`;
+                }
+            } else if (pFinalPower < bFinalPower) {
+                let dmg = bFinalPower;
+                
+                if (alien.name === "Diamondhead") {
+                    dmg = Math.floor(dmg * 0.5);
+                    logResult += `\n💎 [PASSIVE]: ร่างเพชรกางโล่ป้องกันสะท้อน ดาเมจลดลงกึ่งหนึ่ง!`;
+                } else if (alien.name === "Cannonbolt" && currentBossSkill.isFatal) {
+                    dmg = Math.floor(dmg * 0.6);
+                    logResult += `\n⚽ [PASSIVE]: ม้วนตัวหุ้มเกราะรับแรงกระแทกไม้ตาย ดาเมจลดลง 40%!`;
+                }
+
+                playerHp -= dmg; if (playerHp < 0) playerHp = 0;
+                playSound('lose');
+                triggerAnimation('playerCard', 'shake-effect');
+                triggerAnimation('playerCard', 'flash-red-effect');
+                showFloatingText('playerFloatText', `💥 -${dmg}`);
+                
+                if (alien.name === "Ghostfreak") {
+                    logResult += `\n👻 [PASSIVE]: ร่างผีไร้ความกลัว ไม่สูญเสียค่าสภาพจิตใจ (SP ไม่ลด)`;
+                } else if (alien.name === "Chromastone") {
+                    playerSP += 10; if (playerSP > 45) playerSP = 45;
+                    logResult += `\n🔮 [PASSIVE]: คริสตัลดูดซับแรงกระแทก เปลี่ยนเป็นค่าสมาธิพลังงานจิตใจแทน (SP +10)`;
+                } else {
+                    playerSP -= 15; if (playerSP < -45) playerSP = -45;
+                }
+
+                logResult += `\n❌ [🚨 CLASH LOSE]: พ่ายแพ้การปะทะท่า ได้รับบาดเจ็บ -${dmg} HP!`;
+            } else {
+                playSound('punch');
+                triggerAnimation('playerCard', 'shake-effect');
+                triggerAnimation('bossCard', 'shake-effect');
+                logResult += `🤝 [DRAW]: พลังปะทะเท่ากันพอดี เจ๊ากันไปไม่มีใครได้รับบาดเจ็บ!`;
+                if (alien.name === "Wildvine") {
+                    bossHp -= 8; if (bossHp < 0) bossHp = 0;
+                    showFloatingText('bossFloatText', `🌿 -8`);
+                    logResult += `\n🌿 [PASSIVE]: เถาวัลย์พันเกี่ยวรัด สร้างดาเมจฟรีใส่บอส -8 HP!`;
+                }
+            }
+
+            if (alien.name === "Upgrade") {
+                omnitrixEnergy += 20; if (omnitrixEnergy > 100) omnitrixEnergy = 100;
+            }
+
+            if (actionType === 'ego' && playerSP < 0) {
+                logResult += `\n⚠️ [CORROSION RECOIL]: บาปกัดกินส่วนลึกกิเลส เสีย HP ตัวเองไป -15!`;
+                showFloatingText('playerFloatText', `🩸 -15`);
+            }
+
+            document.getElementById('battle-log').innerText = logResult;
+            isUltimateActive = false; 
+            if (selectedAlienIndex !== null) applyAlienNameDisplay();
+            
+            updateUI();
+
+            if (bossHp <= 0) {
+                setTimeout(proceedToNextBoss, 1600);
+            } else {
+                isPlayerTurn = false;
+                setTimeout(endRoundTransition, 1600);
+            }
+        }
+
+        function executeEnemyTurnDirectly(isSuccess) {
+            isPlayerTurn = false;
             setTimeout(() => {
-                document.getElementById('omni-core').classList.remove('scanning');
-                const alien = alienList[selectedAlienIndex];
+                const alien = alienList[selectedAlienIndex] || { name: "ร่างมนุษย์" };
+                if (isSuccess) {
+                    playSound('win');
+                    let evadeLog = `💨 [EVADE SUCCESS]: หลบกระบวนท่าบอสพ้นระยะปลอดภัยอย่างไร้รอยขีดข่วน! ดาเมจกลายเป็น 0!`;
+                    document.getElementById('battle-log').innerText += `\n\n${evadeLog}`;
+                    playerSP += 10; if (playerSP > 45) playerSP = 45;
+                    showFloatingText('playerFloatText', `✨ หลบพ้น`, false);
+                } else {
+                    let bFinalPower = currentBossSkill.basePower;
+                    for (let i = 0; i < currentBossSkill.coins; i++) {
+                        if (Math.random() < 0.50) bFinalPower += currentBossSkill.coinValue;
+                    }
+                    if (alien.name === "Diamondhead") bFinalPower = Math.floor(bFinalPower * 0.5);
+
+                    playerHp -= bFinalPower; if(playerHp < 0) playerHp = 0;
+                    playerSP -= 15; if (playerSP < -45) playerSP = -45;
+                    
+                    playSound('lose');
+                    triggerAnimation('playerCard', 'shake-effect');
+                    triggerAnimation('playerCard', 'flash-red-effect');
+                    showFloatingText('playerFloatText', `💥 -${bFinalPower}`);
+                    
+                    let evadeLog = `🚨 [EVADE FAILED]: ร่างหลบไม่พ้นวงโคจร! โดนบอสอัดความเสียหายเข้าเนื้อเต็มๆ -${bFinalPower} HP!`;
+                    document.getElementById('battle-log').innerText += `\n\n${evadeLog}`;
+                }
                 
-                document.getElementById('player-name-display').innerText = `🟢 Ben (${alien.name})`;
-                document.getElementById('battle-log').innerText = `⚡ แปลงร่างเป็น ${alien.name} สำเร็จ! ลุยโจมตีเลย!`;
-                
-                isScanning = false;
-                hasTransformed = true;
-                document.getElementById('btn-attack').style.display = 'inline-block';
-                document.getElementById('btn-transform').style.display = 'none';
-            }, 800);
+                isEvadingMode = false;
+                isUltimateActive = false;
+                if (selectedAlienIndex !== null) applyAlienNameDisplay();
+                updateUI();
+
+                if (playerHp > 0) {
+                    endRoundTransition();
+                }
+            }, 1200);
         }
 
-        // ระบบโจมตีหลักด้วยเอเลี่ยน
-        function playerTurn() {
-            if (!hasTransformed || isGameOver || isScanning) return;
+        function endRoundTransition() {
+            if (isGameOver) return;
             
             const alien = alienList[selectedAlienIndex];
-            let damage = alien.dmg + alienBonusDmg;
+            if (alien && alien.name === "Swampfire") {
+                playerHp += 8; if (playerHp > 100) playerHp = 100;
+                showFloatingText('playerFloatText', `💚 +8`, false);
+                document.getElementById('battle-log').innerText += `\n🌳 [PASSIVE]: อัตลักษณ์ Swampfire ฟื้นฟูบาดแผลตัวเอง +8 HP`;
+            }
 
-            bossHp -= damage;
-            if (bossHp < 0) bossHp = 0;
+            omnitrixEnergy += 15;
+            if (omnitrixEnergy > 100) omnitrixEnergy = 100;
 
-            // พลังงานนาฬิกาลดลงเทิร์นละ 35%
-            omnitrixEnergy -= 35;
-            if (omnitrixEnergy <= 0) { omnitrixEnergy = 0; isTimeout = true; }
-
-            // สุ่มดรอปของระหว่างโจมตี
-            let lootMsg = rollLoot();
+            isPlayerTurn = true;
+            rollBossSkillForecast();
             updateUI();
-
-            document.getElementById('battle-log').innerText = `⚔️ ${alien.name} โจมตีสร้างดาเมจ ${damage} หน่วย! พลังงานลดลงเหลือ ${omnitrixEnergy}% \n🎁 [ดรอปไอเทม]: ${lootMsg}`;
-
-            if (bossHp <= 0) {
-                document.getElementById('battle-log').innerText = `🎉 ปราบศัตรูสำเร็จ!`;
-                disableActions();
-                setTimeout(nextBoss, 1500);
-            } else {
-                isScanning = true;
-                setTimeout(bossTurn, 1000);
-            }
-        }
-
-        // ระบบใช้ปืน/ดาบมนุษย์ ตอนนาฬิกาหมดเวลา
-        function useHumanWeapon(type, dmg) {
-            if (isGameOver || isScanning || isStolen) return;
-            if (inventory[type] <= 0) return;
-
-            inventory[type]--;
-            bossHp -= dmg;
-            if (bossHp < 0) bossHp = 0;
-
-            let lootMsg = rollLoot();
-            updateUI();
-
-            let wpName = type === 'gun' ? "🔫 ปืนเลเซอร์ช่างประปา" : "⚔️ ดาบแอสคัลลอน";
-            document.getElementById('battle-log').innerText = `💥 นาฬิกาใช้ไม่ได้! เบ็นจึงหยิบ [${wpName}] ยิงถล่มทำดาเมจ ${dmg} หน่วย! \n🎁 [ดรอปไอเทม]: ${lootMsg}`;
-
-            if (bossHp <= 0) {
-                disableActions();
-                setTimeout(nextBoss, 1500);
-            } else {
-                isScanning = true;
-                setTimeout(bossTurn, 1000);
-            }
-        }
-
-        // ระบบใช้หมัดเปล่า ตอนโดนวิลแกกซ์ขโมย
-        function useBareFists() {
-            if (isGameOver || isScanning || !isStolen) return;
-
-            let dmg = 6; // หมัดมนุษย์ดาเมจเบามาก
-            bossHp -= dmg;
-            if (bossHp < 0) bossHp = 0;
-
-            // ตีมีโอกาส 35% ชิงนาฬิกาคืน
-            let reclaimRoll = Math.random();
-            let subMsg = "";
-            if (reclaimRoll < 0.35) {
-                isStolen = false;
-                subMsg = " 🟢 คุณกระโดดต่อยหน้าวิลแกกซ์จนชิง Omnitrix กลับคืนมาสวมข้อมือได้สำเร็จ!!";
-            } else {
-                subMsg = " ❌ พยายามกระชากนาฬิกาคืนแต่ล้มเหลว วิลแกกซ์ปัดมือคุณออก!";
-            }
-
-            updateUI();
-            document.getElementById('battle-log').innerText = `👊 เบ็นใช้หมัดเปล่าชกใส่ศัตรูทำดาเมจเบาหวิว ${dmg} หน่วย! \n${subMsg}`;
-
-            if (bossHp <= 0) {
-                disableActions();
-                setTimeout(nextBoss, 1500);
-            } else {
-                isScanning = true;
-                setTimeout(bossTurn, 1000);
-            }
-        }
-
-        // ระบบบอสโจมตีสวนกลับ + สุ่มขโมยนาฬิกา
-        function bossTurn() {
-            if (isGameOver || bossHp <= 0) return;
-
-            const boss = bossList[currentBossIndex];
-            playerHp -= boss.atk;
-            if (playerHp < 0) playerHp = 0;
-
-            let stealMsg = "";
-            // ถ้าเป็นบอสวิลแกกซ์ และนาฬิกาไม่ได้รับสถานะถูกขโมยอยู่ มีโอกาส 20% ที่จะโดนขโมย
-            if (currentBossIndex === 0 && !isStolen && !isTimeout) {
-                if (Math.random() < 0.20) {
-                    isStolen = true;
-                    hasTransformed = false;
-                    stealMsg = " \n🚨 [วิลแกกซ์ใช้เครื่องดูดพลังขโมยนาฬิกา Omnitrix ของคุณไปแล้ว! คุณต้องใช้หมัดเปล่าตีกดดันเพื่อแย่งคืนมา!]";
-                }
-            }
-
-            // ถ้านาฬิกาหมดเวลา ชาร์จคืนรอบละ 35%
-            if (isTimeout && !isStolen) {
-                omnitrixEnergy += 35;
-                if (omnitrixEnergy >= 100) {
-                    omnitrixEnergy = 100;
-                    isTimeout = false;
-                    stealMsg += " \n🟢 [พลังงาน Omnitrix ชาร์จเต็ม 100% แล้ว! ระบบพร้อมใช้งานแปลงร่างได้อีกครั้ง]";
-                } else {
-                    stealMsg += ` \n🔋 [นาฬิกากำลังชาร์จพลังงานคืนมา... ตอนนี้อยู่ที่ ${omnitrixEnergy}%]`;
-                }
-            }
-
-            updateUI();
-            document.getElementById('battle-log').innerText += ` \n🚨 บอสสวนกลับ! ${boss.name} โจมตีลดเลือดคุณ ${boss.atk} HP! ${stealMsg}`;
-            isScanning = false;
-
-            if (playerHp <= 0) {
-                document.getElementById('battle-log').innerText = "💀 พลังชีวิตหมดลง! เกมโอเวอร์ ปิดระบบข้อมือชั่วคราว";
-                document.getElementById('omni-core').innerText = "❌";
-                endGame();
-            }
-        }
-
-        // ระบบสุ่มดรอปสิ่งของตอนตีบอส
-        function rollLoot() {
-            let roll = Math.random();
-            if (roll < 0.25) {
-                inventory.gun++;
-                return "🔫 ได้รับปืนเลเซอร์ช่างประปา 1 กระบอก!";
-            } else if (roll < 0.45) {
-                inventory.sword++;
-                return "⚔️ ได้รับดาบแอสคัลลอนของอัศวินอวกาศ 1 เล่ม!";
-            } else if (roll < 0.70) {
-                inventory.smoothie++;
-                return "🍔 ได้รับมินิสมูทตี้เติมเลือด 1 แก้ว!";
-            } else {
-                inventory.cores++;
-                return "🧬 ได้รับคอร์พลังงานสำหรับอัปเกรดเอเลี่ยน 1 ชิ้น!";
-            }
-        }
-
-        // ใช้มินิสมูทตี้กินเพิ่มเลือด
-        function useFood() {
-            if (inventory.smoothie <= 0 || playerHp >= 100 || isScanning || isGameOver) return;
-            inventory.smoothie--;
-            playerHp += 25;
-            if (playerHp > 100) playerHp = 100;
-            updateUI();
-            document.getElementById('battle-log').innerText = `💚 กินสมูทตี้ฟื้นพลังคืนชีพไป +25 HP! บอสเห็นสบโอกาสบุกสวนกลับทันที!`;
-            isScanning = true;
-            setTimeout(bossTurn, 800);
-        }
-
-        // อัปเกรดเลเวลเอเลี่ยนถาวร
-        function upgradeAliensPermanently() {
-            if (inventory.cores < 3) { alert("❌ ต้องใช้คอร์พลังงานอย่างน้อย 3 ชิ้นในการกดอัปเกรดครับ!"); return; }
-            inventory.cores -= 3;
-            alienLevel++;
-            alienBonusDmg += 8; // เพิ่มดาเมจถาวรให้เอเลี่ยนทุกตัว ตัวละ +8
-            updateUI();
-            document.getElementById('battle-log').innerText = `🧬 พลังงานซิงค์สำเร็จ! เอเลี่ยนทุกตัวได้รับการพัฒนาขีดจำกัดเป็น LV.${alienLevel} (เพิ่มดาเมจถาวร +8 หน่วย)`;
         }
 
         function updateUI() {
-            document.getElementById('alien-lv').innerText = alienLevel;
-            document.getElementById('alien-bonus').innerText = alienBonusDmg;
-            document.getElementById('count-core').innerText = inventory.cores;
-            document.getElementById('qty-gun').innerText = inventory.gun;
-            document.getElementById('qty-sword').innerText = inventory.sword;
-            document.getElementById('qty-smoothie').innerText = inventory.smoothie;
             document.getElementById('energy-text').innerText = omnitrixEnergy;
             document.getElementById('energyBar').style.width = `${omnitrixEnergy}%`;
 
-            let core = document.getElementById('omni-core');
-            if (isStolen) {
-                document.getElementById('omni-mode-text').innerText = "❌ โดนวิลแกกซ์ขโมยนาฬิกา!";
-                document.getElementById('omniStatus').className = "omni-status-panel stolen-status";
-                core.innerText = "🔒"; core.className = "core stolen-core";
-                document.getElementById('btn-transform').style.display = 'none';
-                document.getElementById('btn-attack').innerText = "👊 ชกหมัดเปล่าชิงนาฬิกาคืน!";
-                document.getElementById('btn-attack').style.display = 'inline-block';
-                document.getElementById('btn-attack').onclick = useBareFists;
-            } else if (isTimeout) {
-                document.getElementById('omni-mode-text').innerText = "⏳ พลังงานหมด (TIMEOUT)";
-                document.getElementById('omniStatus').className = "omni-status-panel";
-                core.innerText = "⏳"; core.className = "core timeout-core";
-                document.getElementById('btn-transform').style.display = 'none';
-                document.getElementById('btn-attack').style.display = 'none';
-            } else {
-                document.getElementById('omni-mode-text').innerText = "Omnitrix Standard";
-                document.getElementById('omni-status-panel')?.classList.remove('stolen-status');
-                if (!hasTransformed) { core.innerText = "🟢"; core.className = "core"; }
-                document.getElementById('btn-attack').innerText = "💥 สั่งโจมตีบอส!";
-                document.getElementById('btn-attack').onclick = playerTurn;
-            }
+            const spDisplay = document.getElementById('player-sp-display');
+            spDisplay.innerText = `SP: ${playerSP}`;
+            spDisplay.className = playerSP >= 0 ? "sp-badge sp-positive" : "sp-badge sp-negative";
 
-            // เปิดปิดปืน/ดาบมนุษย์
-            document.getElementById('use-gun').disabled = (inventory.gun <= 0 || isStolen || !isTimeout || isScanning);
-            document.getElementById('use-sword').disabled = (inventory.sword <= 0 || isStolen || !isTimeout || isScanning);
-            document.getElementById('use-smoothie').disabled = (inventory.smoothie <= 0 || playerHp >= 100 || isScanning);
+            document.getElementById('btn-punch').disabled = !isPlayerTurn;
+            document.getElementById('btn-kick').disabled = !isPlayerTurn;
+            document.getElementById('btn-evade').disabled = !isPlayerTurn;
+            document.getElementById('btn-ultimate-trigger').disabled = !isPlayerTurn;
+
+            const alien = alienList[selectedAlienIndex];
+            let neededEnergy = (alien && alien.name === "Alien X") ? 80 : ((alien && alien.name === "Jetray") ? 30 : 40);
+            document.getElementById('btn-ego').disabled = (!isPlayerTurn || omnitrixEnergy < neededEnergy);
+
+            if (playerSP < 0) {
+                document.getElementById('btn-ego').innerHTML = `🩸 E.G.O กัดกร่อน<br>พลังคลุ้มคลั่งระเบิดเมือง`;
+                document.getElementById('btn-ego').style.color = "#ff3333";
+                document.getElementById('btn-ego').style.borderColor = "#ff3333";
+            } else {
+                document.getElementById('btn-ego').innerHTML = `🔮 E.G.O ปลุกพลัง<br>ต้องการพลังงาน ${neededEnergy}%`;
+                document.getElementById('btn-ego').style.color = "#df80ff";
+                document.getElementById('btn-ego').style.borderColor = "#b800ff";
+            }
 
             const boss = bossList[currentBossIndex];
             document.getElementById('boss-name-display').innerText = boss.name;
@@ -546,65 +1059,68 @@
 
             document.getElementById('player-hp-text').innerText = playerHp;
             document.getElementById('playerHpBar').style.width = `${playerHp}%`;
+
+            if (playerHp <= 0 && !isGameOver) {
+                isGameOver = true;
+                playSound('lose');
+                document.getElementById('battle-log').innerText = "💀 [ENCOUNTER OVER]: โครงข่าย Omnitrix เสียหายเกินเยียวยา สารพันธุกรรมสลายหมดสิ้น (Game Over)";
+                document.getElementById('btn-reset').style.display = 'inline-block';
+            }
         }
 
-        function nextBoss() {
+        function proceedToNextBoss() {
+            playSound('win');
             currentBossIndex = (currentBossIndex + 1) % bossList.length;
             bossHp = bossList[currentBossIndex].maxHp;
             playerHp = 100;
+            playerSP = 0;
             omnitrixEnergy = 100;
-            isStolen = false;
-            isTimeout = false;
             hasTransformed = false;
-            isScanning = false;
-            
-            if (selectedAlienIndex !== null) document.getElementById(`alien-${selectedAlienIndex}`).classList.remove('selected');
+            isUltimateActive = false;
+            isPlayerTurn = true;
+            debuffOnBossNextTurn = 0;
+
+            if (selectedAlienIndex !== null) {
+                const oldElement = document.getElementById(`alien-${selectedAlienIndex}`);
+                if (oldElement) oldElement.classList.remove('selected');
+            }
             selectedAlienIndex = null;
 
-            document.getElementById('story-text').innerText = bossList[currentBossIndex].intro;
-            document.getElementById('player-name-display').innerText = `🟢 Ben Tennyson (ร่างมนุษย์)`;
-            document.getElementById('btn-transform').style.display = 'inline-block';
-            document.getElementById('btn-attack').style.display = 'none';
+            document.getElementById('player-name-display').innerText = `🟢 Ben (ร่างมนุษย์)`;
+            document.getElementById('evolution-status').children[0].innerText = `🧬 สภาวะพันธุกรรม: ร่างปกติธรรมดา`;
+            document.getElementById('sin-affinity-display').innerText = "";
+            document.getElementById('passive-display').innerText = "💡 สกิลติดตัวประจำอัตลักษณ์: คืนสภาพปกติ (ยังไม่ได้เลือกแปลงสายพันธุ์ดีเอ็นเอ)";
+            document.getElementById('omni-core').innerText = "🟢";
+            document.getElementById('battle-log').innerText = `🎉 [STAGE CLEAR]: บรรลุการทดสอบอัตลักษณ์! กำลังดาวน์โหลดข้อมูลเพื่อเดินทางไป Sector ถัดไป...`;
+            
+            rollBossSkillForecast();
+            updateStoryBox();
             updateUI();
-        }
-
-        function disableActions() {
-            document.getElementById('btn-attack').style.display = 'none';
-            document.getElementById('btn-transform').style.display = 'none';
-            document.getElementById('btn-random').style.display = 'none';
-        }
-
-        function endGame() {
-            isGameOver = true;
-            disableActions();
-            document.getElementById('btn-reset').style.display = 'inline-block';
         }
 
         function resetGame() {
             currentBossIndex = 0;
             bossHp = bossList[0].maxHp;
             playerHp = 100;
-            selectedAlienIndex = null;
-            isScanning = false;
-            hasTransformed = false;
-            isGameOver = false;
+            playerSP = 0;
             omnitrixEnergy = 100;
-            isStolen = false;
-            isTimeout = false;
-            alienLevel = 1;
-            alienBonusDmg = 0;
-            inventory = { gun: 0, sword: 0, smoothie: 2, cores: 0 };
+            selectedAlienIndex = null;
+            hasTransformed = false;
+            isUltimateActive = false;
+            isGameOver = false;
+            isPlayerTurn = true;
+            isEvadingMode = false;
+            debuffOnBossNextTurn = 0;
             
-            document.getElementById('player-name-display').innerText = `🟢 Ben Tennyson (ร่างมนุษย์)`;
-            document.getElementById('btn-reset').style.display = 'none';
-            document.getElementById('btn-transform').style.display = 'inline-block';
-            document.getElementById('btn-random').style.display = 'inline-block';
+            document.getElementById('player-name-display').innerText = `🟢 Ben (ร่างมนุษย์)`;
+            document.getElementById('sin-affinity-display').innerText = "";
+            document.getElementById('passive-display').innerText = "💡 สกิลติดตัวประจำอัตลักษณ์: คืนสภาพปกติ (ยังไม่ได้เลือกแปลงสายพันธุ์ดีเอ็นเอ)";
+            document.getElementById('btn-reset').style.none = 'none';
             
             initGame();
         }
 
         initGame();
     </script>
-
 </body>
 </html>
